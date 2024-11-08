@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Locospec\LLCS\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class LLCSCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'locospec-laravel';
 
     public $description = 'My command';
 
