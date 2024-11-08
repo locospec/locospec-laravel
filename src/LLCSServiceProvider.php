@@ -2,9 +2,9 @@
 
 namespace Locospec\LLCS;
 
+use Locospec\LLCS\Commands\LLCSCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Locospec\LLCS\Commands\LLCSCommand;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
