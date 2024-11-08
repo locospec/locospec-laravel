@@ -40,7 +40,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         });
 
         // Register LLCS with proper Application injection
-        $this->app->singleton('llcs', function (Application $app) {
+        $this->app->bind('llcs', function (Application $app) {
             Log::info('Creating LLCS instance');
 
             return new LLCS($app);
