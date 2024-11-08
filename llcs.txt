@@ -1,0 +1,124 @@
+Project Path: /Users/rajiv/Projects/Locospec/locospec-laravel/src
+
+Source Tree:
+
+```
+src
+├── LLCSServiceProvider.php
+├── LLCS.php
+├── Facades
+│   └── LLCS.php
+└── Commands
+    └── LLCSCommand.php
+
+```
+
+`/Users/rajiv/Projects/Locospec/locospec-laravel/src/LLCSServiceProvider.php`:
+
+```````php
+<?php
+
+namespace Locospec\LLCS;
+
+use Illuminate\Support\Facades\Log;
+use Spatie\LaravelPackageTools\Package;
+use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Locospec\LLCS\Commands\LLCSCommand;
+
+class LLCSServiceProvider extends PackageServiceProvider
+{
+    public function configurePackage(Package $package): void
+    {
+        /*
+         * This class is a Package Service Provider
+         *
+         * More info: https://github.com/spatie/laravel-package-tools
+         */
+        $package
+            ->name('locospec-laravel')
+            ->hasConfigFile()
+            ->hasViews()
+            ->hasMigration('create_locospec_laravel_table')
+            ->hasCommand(LLCSCommand::class);
+    }
+
+    public function registeringPackage()
+    {
+        Log::info("registeringPackage");
+    }
+
+    public function packageRegistered()
+    {
+        Log::info("packageRegistered");
+    }
+
+    public function bootingPackage()
+    {
+        Log::info("bootingPackage");
+    }
+
+    public function packageBooted()
+    {
+        Log::info("packageBooted");
+    }
+}
+
+```````
+
+`/Users/rajiv/Projects/Locospec/locospec-laravel/src/LLCS.php`:
+
+```````php
+<?php
+
+namespace Locospec\LLCS;
+
+class LLCS {}
+
+```````
+
+`/Users/rajiv/Projects/Locospec/locospec-laravel/src/Facades/LLCS.php`:
+
+```````php
+<?php
+
+namespace Locospec\LLCS\Facades;
+
+use Illuminate\Support\Facades\Facade;
+
+/**
+ * @see \Locospec\LLCS\LLCS
+ */
+class LLCS extends Facade
+{
+    protected static function getFacadeAccessor(): string
+    {
+        return \Locospec\LLCS\LLCS::class;
+    }
+}
+
+```````
+
+`/Users/rajiv/Projects/Locospec/locospec-laravel/src/Commands/LLCSCommand.php`:
+
+```````php
+<?php
+
+namespace Locospec\LLCS\Commands;
+
+use Illuminate\Console\Command;
+
+class LLCSCommand extends Command
+{
+    public $signature = 'locospec-laravel';
+
+    public $description = 'My command';
+
+    public function handle(): int
+    {
+        $this->comment('All done');
+
+        return self::SUCCESS;
+    }
+}
+
+```````

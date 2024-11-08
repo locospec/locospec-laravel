@@ -11,6 +11,6 @@ class LLCS extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Locospec\LLCS\LLCS::class;
+        return 'llcs';
     }
 }
