@@ -7,6 +7,7 @@ use Locospec\LCS\LCS;
 class LLCS
 {
     protected $app;
+
     protected $engine;
 
     public function __construct($app)

@@ -2,12 +2,12 @@
 
 namespace Locospec\LLCS;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Log;
+use Locospec\LCS\LCS;
+use Locospec\LLCS\Commands\LLCSCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Locospec\LLCS\Commands\LLCSCommand;
-use Locospec\LCS\LCS;
-use Illuminate\Contracts\Foundation\Application;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
@@ -30,17 +30,19 @@ class LLCSServiceProvider extends PackageServiceProvider
     {
         parent::register();
 
-        Log::info("Registering LLCS bindings");
+        Log::info('Registering LLCS bindings');
 
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
-            Log::info("Creating LCS instance");
-            return new LCS();
+            Log::info('Creating LCS instance');
+
+            return new LCS;
         });
 
         // Register LLCS with proper Application injection
         $this->app->singleton('llcs', function (Application $app) {
-            Log::info("Creating LLCS instance");
+            Log::info('Creating LLCS instance');
+
             return new LLCS($app);
         });
     }
@@ -49,39 +51,39 @@ class LLCSServiceProvider extends PackageServiceProvider
     {
         parent::boot();
 
-        Log::info("Booting LLCS");
+        Log::info('Booting LLCS');
 
         $this->app->beforeResolving('llcs', function ($name) {
-            Log::info("Before resolving LLCS", ['name' => $name]);
+            Log::info('Before resolving LLCS', ['name' => $name]);
         });
 
         $this->app->afterResolving('llcs', function ($resolved, $app) {
-            Log::info("After resolving LLCS", ['resolved' => get_class($resolved)]);
+            Log::info('After resolving LLCS', ['resolved' => get_class($resolved)]);
         });
 
         // Bootstrap LCS with Laravel configuration
         try {
-            if (!LCS::isInitialized()) {
+            if (! LCS::isInitialized()) {
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
                 ]);
-                Log::info("LCS bootstrapped successfully");
+                Log::info('LCS bootstrapped successfully');
             }
         } catch (\Exception $e) {
             Log::error('Failed to bootstrap LCS', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
         }
     }
 
     public function packageRegistered()
     {
-        Log::info("packageRegistered");
+        Log::info('packageRegistered');
     }
 
     public function bootingPackage()
     {
-        Log::info("bootingPackage");
+        Log::info('bootingPackage');
     }
 }
