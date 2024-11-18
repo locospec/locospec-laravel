@@ -4,7 +4,6 @@ namespace Locospec\LLCS\Database;
 
 use Illuminate\Database\Query\Builder;
 use Locospec\LCS\Query\FilterGroup;
-use Locospec\LLCS\Database\DatabaseUtils;
 
 class WhereExpressionBuilder
 {
@@ -59,16 +58,16 @@ class WhereExpressionBuilder
                 $query->$method($attribute, '<', $value);
                 break;
             case 'LIKE':
-                $query->$method($attribute, 'LIKE', '%' . $value . '%');
+                $query->$method($attribute, 'LIKE', '%'.$value.'%');
                 break;
             case 'IN':
-                $query->{"{$method}In"}($attribute, (array)$value);
+                $query->{"{$method}In"}($attribute, (array) $value);
                 break;
             case 'NOT IN':
-                $query->{"{$method}NotIn"}($attribute, (array)$value);
+                $query->{"{$method}NotIn"}($attribute, (array) $value);
                 break;
             case 'BETWEEN':
-                $query->{"{$method}Between"}($attribute, (array)$value);
+                $query->{"{$method}Between"}($attribute, (array) $value);
                 break;
             case 'IS NULL':
                 $query->{"{$method}Null"}($attribute);

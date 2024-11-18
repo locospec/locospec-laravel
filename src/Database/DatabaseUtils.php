@@ -20,8 +20,8 @@ class DatabaseUtils
             'timing' => [
                 'started_at' => $startTime,
                 'ended_at' => $endTime,
-                'duration' => $endTime - $startTime
-            ]
+                'duration' => $endTime - $startTime,
+            ],
         ];
     }
 
@@ -95,10 +95,10 @@ class DatabaseUtils
         $sortAttributes = array_column($sort, 'attribute');
 
         foreach ($primaryKeys as $primaryKey) {
-            if (!in_array($primaryKey, $sortAttributes)) {
+            if (! in_array($primaryKey, $sortAttributes)) {
                 $sort[] = [
                     'attribute' => $primaryKey,
-                    'direction' => 'ASC'
+                    'direction' => 'ASC',
                 ];
             }
         }
@@ -114,9 +114,9 @@ class DatabaseUtils
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as ' . $alias;
+            $attribute .= ' as '.$alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as ' . self::generateJsonPathAlias($path);
+            $attribute .= ' as '.self::generateJsonPathAlias($path);
         }
 
         return DB::raw($attribute);
@@ -135,8 +135,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column . '->' . implode('->', array_map(
-            fn($part, $index) => sprintf(
+        return $column.'->'.implode('->', array_map(
+            fn ($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
@@ -170,6 +170,7 @@ class DatabaseUtils
         if (is_array($results)) {
             return $results;
         }
+
         return json_decode(json_encode($results), true);
     }
 
@@ -185,7 +186,7 @@ class DatabaseUtils
                 'per_page' => $paginator->perPage(),
                 'has_more' => $paginator->hasMorePages(),
                 'next_cursor' => $paginator->nextCursor()?->encode(),
-                'prev_cursor' => $paginator->previousCursor()?->encode()
+                'prev_cursor' => $paginator->previousCursor()?->encode(),
             ];
         }
 
@@ -195,7 +196,7 @@ class DatabaseUtils
             'per_page' => $paginator->perPage(),
             'current_page' => $paginator->currentPage(),
             'total_pages' => $paginator->lastPage(),
-            'has_more' => $paginator->hasMorePages()
+            'has_more' => $paginator->hasMorePages(),
         ];
     }
 
@@ -224,6 +225,7 @@ class DatabaseUtils
             if (str_contains($field, '->')) {
                 return self::handleJsonPathQuery($field);
             }
+
             return $field;
         }, $fields);
     }
@@ -241,9 +243,9 @@ class DatabaseUtils
             'timing' => [
                 'started_at' => $startTime,
                 'ended_at' => $endTime,
-                'duration' => $duration
+                'duration' => $duration,
             ],
-            'sql' => $sql
+            'sql' => $sql,
         ];
     }
 }

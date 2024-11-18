@@ -5,22 +5,23 @@ namespace Locospec\LLCS\Database;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Database\DatabaseOperatorInterface;
-use Locospec\LLCS\Database\DatabaseUtils;
 use Locospec\LCS\Query\CursorPagination;
 use Locospec\LCS\Query\FilterGroup;
-use Locospec\LCS\Query\Query;
 use Locospec\LCS\Query\Pagination;
+use Locospec\LCS\Query\Query;
 
 class DatabaseOperator implements DatabaseOperatorInterface
 {
     private WhereExpressionBuilder $whereBuilder;
+
     private PaginationHandler $paginationHandler;
+
     private array $queryLog = [];
 
     public function __construct()
     {
-        $this->whereBuilder = new WhereExpressionBuilder();
-        $this->paginationHandler = new PaginationHandler();
+        $this->whereBuilder = new WhereExpressionBuilder;
+        $this->paginationHandler = new PaginationHandler;
     }
 
     private function executeOperation(callable $operation, Builder|string $query): array
@@ -37,7 +38,7 @@ class DatabaseOperator implements DatabaseOperatorInterface
             $this->queryLog[] = [
                 'sql' => $sql,
                 'start' => $startTime,
-                'end' => $endTime
+                'end' => $endTime,
             ];
 
             return [
@@ -46,8 +47,8 @@ class DatabaseOperator implements DatabaseOperatorInterface
                 'timing' => [
                     'started_at' => $startTime,
                     'ended_at' => $endTime,
-                    'duration' => $endTime - $startTime
-                ]
+                    'duration' => $endTime - $startTime,
+                ],
             ];
         } catch (\Exception $e) {
             throw new \RuntimeException(
@@ -61,21 +62,24 @@ class DatabaseOperator implements DatabaseOperatorInterface
     public function insert(string $table, array $data): array
     {
         $query = DB::table($table);
-        return $this->executeOperation(fn() => $query->insert($data), $query);
+
+        return $this->executeOperation(fn () => $query->insert($data), $query);
     }
 
     public function update(string $table, array $data, FilterGroup $conditions): array
     {
         $query = DB::table($table);
         $this->whereBuilder->build($query, $conditions);
-        return $this->executeOperation(fn() => $query->update($data), $query);
+
+        return $this->executeOperation(fn () => $query->update($data), $query);
     }
 
     public function delete(string $table, FilterGroup $conditions): array
     {
         $query = DB::table($table);
         $this->whereBuilder->build($query, $conditions);
-        return $this->executeOperation(fn() => $query->delete(), $query);
+
+        return $this->executeOperation(fn () => $query->delete(), $query);
     }
 
     public function softDelete(string $table, FilterGroup $conditions): array
@@ -92,7 +96,7 @@ class DatabaseOperator implements DatabaseOperatorInterface
         $this->whereBuilder->build($query, $conditions);
 
         return $this->executeOperation(
-            fn() => $query->get()->map(fn($item) => DatabaseUtils::resultsToArray($item))->all(),
+            fn () => $query->get()->map(fn ($item) => DatabaseUtils::resultsToArray($item))->all(),
             $query
         );
     }
@@ -101,14 +105,16 @@ class DatabaseOperator implements DatabaseOperatorInterface
     {
         $query = DB::table($table);
         $this->whereBuilder->build($query, $conditions);
-        return $this->executeOperation(fn() => $query->count(), $query);
+
+        return $this->executeOperation(fn () => $query->count(), $query);
     }
 
     public function paginate(string $table, array $columns, Pagination $pagination, ?FilterGroup $conditions = null): array
     {
         $query = $this->buildBaseQuery($table, $columns, $conditions);
+
         return $this->executeOperation(
-            fn() => $this->paginationHandler->paginate($query, $pagination),
+            fn () => $this->paginationHandler->paginate($query, $pagination),
             $query
         );
     }
@@ -116,8 +122,9 @@ class DatabaseOperator implements DatabaseOperatorInterface
     public function cursorPaginate(string $table, array $columns, CursorPagination $cursor, ?FilterGroup $conditions = null): array
     {
         $query = $this->buildBaseQuery($table, $columns, $conditions);
+
         return $this->executeOperation(
-            fn() => $this->paginationHandler->cursorPaginate($query, $cursor),
+            fn () => $this->paginationHandler->cursorPaginate($query, $cursor),
             $query
         );
     }
@@ -125,7 +132,7 @@ class DatabaseOperator implements DatabaseOperatorInterface
     public function raw(string $sql, array $bindings = []): array
     {
         return $this->executeOperation(
-            fn() => DB::select($sql, $bindings),
+            fn () => DB::select($sql, $bindings),
             $sql
         );
     }
@@ -156,12 +163,13 @@ class DatabaseOperator implements DatabaseOperatorInterface
             if ($pagination instanceof CursorPagination) {
                 return $this->cursorPaginate($table, ['*'], $pagination, $query->getFilters());
             }
+
             return $this->paginate($table, ['*'], $pagination, $query->getFilters());
         }
 
         // Execute regular select query
         return $this->executeOperation(
-            fn() => $queryBuilder->get()->map(fn($item) => DatabaseUtils::resultsToArray($item))->all(),
+            fn () => $queryBuilder->get()->map(fn ($item) => DatabaseUtils::resultsToArray($item))->all(),
             $queryBuilder
         );
     }
