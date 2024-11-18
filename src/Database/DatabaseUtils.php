@@ -2,8 +2,8 @@
 
 namespace Locospec\LLCS\Database;
 
-use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Schema\Schema;
@@ -112,17 +112,17 @@ class DatabaseUtils
     /**
      * Handle JSON path queries with optional alias
      */
-    public static function handleJsonPathQuery(string $path, ?string $alias = null)
+    public static function handleJsonPathQuery(string $path, ?string $alias = null): Expression
     {
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as '.$alias;
+            $attribute .= ' as ' . $alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as '.self::generateJsonPathAlias($path);
+            $attribute .= ' as ' . self::generateJsonPathAlias($path);
         }
 
-        return DB::raw($attribute);
+        return self::raw($attribute);
     }
 
     /**
@@ -138,8 +138,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column.'->'.implode('->', array_map(
-            fn ($part, $index) => sprintf(
+        return $column . '->' . implode('->', array_map(
+            fn($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
@@ -204,14 +204,25 @@ class DatabaseUtils
             ];
         }
 
+        return [
+            'count' => $paginator->total(),
+            'per_page' => $paginator->perPage(),
+            'current_page' => $paginator->currentPage(),
+            'total_pages' => $paginator->lastPage(),
+            'has_more' => $paginator->hasMorePages(),
+        ];
+
         throw new \InvalidArgumentException('Unsupported paginator type');
     }
 
     /**
      * Create a raw SQL expression with proper return type
+     *
+     * @return \Illuminate\Database\Query\Expression
      */
     public static function raw(string $expression): Expression
     {
+        /** @var \Illuminate\Database\Query\Expression */
         return DB::raw($expression);
     }
 
