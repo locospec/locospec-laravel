@@ -2,11 +2,11 @@
 
 namespace Locospec\LLCS\Database;
 
-use Illuminate\Support\Facades\DB;
-use Locospec\LCS\Schema\Schema;
-use Illuminate\Database\Query\Expression;
 use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Support\Facades\DB;
+use Locospec\LCS\Schema\Schema;
 
 class DatabaseUtils
 {
@@ -117,9 +117,9 @@ class DatabaseUtils
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as ' . $alias;
+            $attribute .= ' as '.$alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as ' . self::generateJsonPathAlias($path);
+            $attribute .= ' as '.self::generateJsonPathAlias($path);
         }
 
         return DB::raw($attribute);
@@ -138,8 +138,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column . '->' . implode('->', array_map(
-            fn($part, $index) => sprintf(
+        return $column.'->'.implode('->', array_map(
+            fn ($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
@@ -180,7 +180,7 @@ class DatabaseUtils
     /**
      * Format pagination metadata with proper type hints
      *
-     * @param LengthAwarePaginator|CursorPaginator $paginator
+     * @param  LengthAwarePaginator|CursorPaginator  $paginator
      */
     public static function formatPaginationMetadata($paginator): array
     {
