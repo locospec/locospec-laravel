@@ -3,7 +3,6 @@
 namespace Locospec\LLCS\Database;
 
 use Illuminate\Database\Query\Builder;
-use Locospec\LLCS\Database\DatabaseUtils;
 use Locospec\LCS\Query\CursorPagination;
 use Locospec\LCS\Query\Pagination;
 
@@ -22,7 +21,7 @@ class PaginationHandler
             'data' => collect($result->items())->map(function ($item) {
                 return DatabaseUtils::resultsToArray($item);
             })->all(),
-            'pagination' => DatabaseUtils::formatPaginationMetadata($result)
+            'pagination' => DatabaseUtils::formatPaginationMetadata($result),
         ];
     }
 
@@ -39,7 +38,7 @@ class PaginationHandler
             'data' => collect($result->items())->map(function ($item) {
                 return DatabaseUtils::resultsToArray($item);
             })->all(),
-            'pagination' => DatabaseUtils::formatPaginationMetadata($result)
+            'pagination' => DatabaseUtils::formatPaginationMetadata($result),
         ];
     }
 
@@ -48,7 +47,7 @@ class PaginationHandler
         $orders = collect($query->getQuery()->orders ?? []);
 
         // Check if primary key is already in sort
-        if (!$orders->contains('column', $primaryKey)) {
+        if (! $orders->contains('column', $primaryKey)) {
             $query->orderBy($primaryKey);
         }
     }
