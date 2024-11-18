@@ -4,6 +4,9 @@ namespace Locospec\LLCS\Database;
 
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Schema\Schema;
+use Illuminate\Database\Query\Expression;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class DatabaseUtils
 {
@@ -114,9 +117,9 @@ class DatabaseUtils
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as '.$alias;
+            $attribute .= ' as ' . $alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as '.self::generateJsonPathAlias($path);
+            $attribute .= ' as ' . self::generateJsonPathAlias($path);
         }
 
         return DB::raw($attribute);
@@ -135,8 +138,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column.'->'.implode('->', array_map(
-            fn ($part, $index) => sprintf(
+        return $column . '->' . implode('->', array_map(
+            fn($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
@@ -175,12 +178,13 @@ class DatabaseUtils
     }
 
     /**
-     * Format pagination metadata
+     * Format pagination metadata with proper type hints
+     *
+     * @param LengthAwarePaginator|CursorPaginator $paginator
      */
-    public static function formatPaginationMetadata(mixed $paginator): array
+    public static function formatPaginationMetadata($paginator): array
     {
-        if (method_exists($paginator, 'nextCursor')) {
-            // Cursor pagination
+        if ($paginator instanceof CursorPaginator) {
             return [
                 'count' => $paginator->count(),
                 'per_page' => $paginator->perPage(),
@@ -190,20 +194,23 @@ class DatabaseUtils
             ];
         }
 
-        // Offset pagination
-        return [
-            'count' => $paginator->total(),
-            'per_page' => $paginator->perPage(),
-            'current_page' => $paginator->currentPage(),
-            'total_pages' => $paginator->lastPage(),
-            'has_more' => $paginator->hasMorePages(),
-        ];
+        if ($paginator instanceof LengthAwarePaginator) {
+            return [
+                'count' => $paginator->total(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'total_pages' => $paginator->lastPage(),
+                'has_more' => $paginator->hasMorePages(),
+            ];
+        }
+
+        throw new \InvalidArgumentException('Unsupported paginator type');
     }
 
     /**
-     * Create a raw SQL expression
+     * Create a raw SQL expression with proper return type
      */
-    public static function raw(string $expression): \Illuminate\Database\Query\Expression
+    public static function raw(string $expression): Expression
     {
         return DB::raw($expression);
     }
