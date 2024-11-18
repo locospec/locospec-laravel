@@ -64,9 +64,9 @@
         "test-coverage": "vendor/bin/pest --coverage",
         "format": "vendor/bin/pint",
         "c2p": [
-            "code2prompt src --output=c2p/llcs_src.txt",
-            "code2prompt config --output=c2p/llcs_config.txt",
-            "code2prompt database --output=c2p/llcs_database.txt"
+            "code2prompt src --output=../c2p-php/llcs_src.txt",
+            "code2prompt config --output=../c2p-php/llcs_config.txt",
+            "code2prompt database --output=../c2p-php/llcs_database.txt"
         ]
     },
     "config": {
