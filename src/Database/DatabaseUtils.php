@@ -117,9 +117,9 @@ class DatabaseUtils
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as '.$alias;
+            $attribute .= ' as ' . $alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as '.self::generateJsonPathAlias($path);
+            $attribute .= ' as ' . self::generateJsonPathAlias($path);
         }
 
         return self::raw($attribute);
@@ -138,8 +138,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column.'->'.implode('->', array_map(
-            fn ($part, $index) => sprintf(
+        return $column . '->' . implode('->', array_map(
+            fn($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
@@ -194,15 +194,15 @@ class DatabaseUtils
             ];
         }
 
-        if ($paginator instanceof LengthAwarePaginator) {
-            return [
-                'count' => $paginator->total(),
-                'per_page' => $paginator->perPage(),
-                'current_page' => $paginator->currentPage(),
-                'total_pages' => $paginator->lastPage(),
-                'has_more' => $paginator->hasMorePages(),
-            ];
-        }
+        // if ($paginator instanceof LengthAwarePaginator) {
+        //     return [
+        //         'count' => $paginator->total(),
+        //         'per_page' => $paginator->perPage(),
+        //         'current_page' => $paginator->currentPage(),
+        //         'total_pages' => $paginator->lastPage(),
+        //         'has_more' => $paginator->hasMorePages(),
+        //     ];
+        // }
 
         return [
             'count' => $paginator->total(),
@@ -212,7 +212,7 @@ class DatabaseUtils
             'has_more' => $paginator->hasMorePages(),
         ];
 
-        throw new \InvalidArgumentException('Unsupported paginator type');
+        // throw new \InvalidArgumentException('Unsupported paginator type');
     }
 
     /**
