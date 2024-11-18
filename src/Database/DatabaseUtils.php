@@ -2,9 +2,9 @@
 
 namespace Locospec\LLCS\Database;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Pagination\CursorPaginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Schema\Schema;
 
@@ -117,9 +117,9 @@ class DatabaseUtils
         $attribute = self::buildJsonPathQuery($path);
 
         if ($alias !== null) {
-            $attribute .= ' as '.$alias;
+            $attribute .= ' as ' . $alias;
         } elseif (str_contains($path, '->')) {
-            $attribute .= ' as '.self::generateJsonPathAlias($path);
+            $attribute .= ' as ' . self::generateJsonPathAlias($path);
         }
 
         return self::raw($attribute);
@@ -138,8 +138,8 @@ class DatabaseUtils
             return $column;
         }
 
-        return $column.'->'.implode('->', array_map(
-            fn ($part, $index) => sprintf(
+        return $column . '->' . implode('->', array_map(
+            fn($part, $index) => sprintf(
                 "'%s'%s",
                 $part,
                 $index === $lastIndex ? '>' : ''
