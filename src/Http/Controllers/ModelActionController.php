@@ -12,9 +12,8 @@ class ModelActionController extends Controller
     /**
      * Handle all model actions
      *
-     * @param Request $request
-     * @param string $model Hyphenated model name from URL
-     * @param string $action Hyphenated action name from URL
+     * @param  string  $model  Hyphenated model name from URL
+     * @param  string  $action  Hyphenated action name from URL
      * @return \Illuminate\Http\JsonResponse
      */
     public function handle(Request $request, string $model, string $action)
@@ -36,13 +35,13 @@ class ModelActionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null
+                'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 400);
         }
     }

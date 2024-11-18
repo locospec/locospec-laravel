@@ -29,12 +29,14 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
             Log::info('Creating LCS instance');
+
             return new LCS;
         });
 
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
             Log::info('Creating LLCS instance');
+
             return new LLCS($app);
         });
 
@@ -49,7 +51,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs') . '.',
+            'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')
@@ -66,7 +68,7 @@ class LLCSServiceProvider extends PackageServiceProvider
 
         // Bootstrap LCS with Laravel configuration
         try {
-            if (!LCS::isInitialized()) {
+            if (! LCS::isInitialized()) {
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
                 ]);
