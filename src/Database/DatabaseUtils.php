@@ -109,7 +109,7 @@ class DatabaseUtils
     /**
      * Handle JSON path queries with optional alias
      */
-    public static function handleJsonPathQuery(string $path, ?string $alias = null): \Illuminate\Database\Query\Expression
+    public static function handleJsonPathQuery(string $path, ?string $alias = null)
     {
         $attribute = self::buildJsonPathQuery($path);
 
