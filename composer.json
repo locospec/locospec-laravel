@@ -62,7 +62,11 @@
         "analyse": "vendor/bin/phpstan analyse",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "format": "vendor/bin/pint"
+        "format": "vendor/bin/pint",
+        "c2p": [
+            "code2prompt src --output=c2p/llcs_src.txt",
+            "code2prompt config --output=c2p/llcs_config.txt"
+        ]
     },
     "config": {
         "sort-packages": true,
