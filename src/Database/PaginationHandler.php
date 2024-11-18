@@ -10,6 +10,7 @@ class PaginationHandler
 {
     public function paginate(Builder $query, Pagination $pagination): array
     {
+        /** @var \Illuminate\Pagination\LengthAwarePaginator $result */
         $result = $query->paginate(
             $pagination->getPerPage(),
             ['*'],
@@ -27,6 +28,7 @@ class PaginationHandler
 
     public function cursorPaginate(Builder $query, CursorPagination $cursor): array
     {
+        /** @var \Illuminate\Pagination\CursorPaginator $result */
         $result = $query->cursorPaginate(
             $cursor->getLimit(),
             ['*'],
