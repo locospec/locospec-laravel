@@ -33,12 +33,13 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
             Log::info('Creating LCS instance');
+
             return new LCS;
         });
 
         // Register DatabaseOperator
         $this->app->singleton(DatabaseOperatorInterface::class, function () {
-            return new DatabaseOperator();
+            return new DatabaseOperator;
         });
 
         // Register StateMachineFactory
@@ -76,7 +77,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs') . '.',
+            'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')
