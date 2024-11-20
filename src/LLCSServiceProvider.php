@@ -4,8 +4,12 @@ namespace Locospec\LLCS;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Locospec\LCS\Actions\ActionOrchestrator;
+use Locospec\LCS\Actions\StateMachineFactory;
+use Locospec\LCS\Database\DatabaseOperatorInterface;
 use Locospec\LCS\LCS;
 use Locospec\LLCS\Commands\LLCSCommand;
+use Locospec\LLCS\Database\DatabaseOperator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -29,13 +33,34 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
             Log::info('Creating LCS instance');
-
             return new LCS;
+        });
+
+        // Register DatabaseOperator
+        $this->app->singleton(DatabaseOperatorInterface::class, function () {
+            return new DatabaseOperator();
+        });
+
+        // Register StateMachineFactory
+        $this->app->singleton(StateMachineFactory::class, function ($app) {
+            return new StateMachineFactory($app->make(LCS::class));
+        });
+
+        // Register ActionOrchestrator
+        $this->app->singleton(ActionOrchestrator::class, function ($app) {
+            return new ActionOrchestrator(
+                $app->make(LCS::class),
+                $app->make(StateMachineFactory::class)
+            );
         });
 
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
             Log::info('Creating LLCS instance');
+
+            // Register database operator with LCS
+            $lcs = $app->make(LCS::class);
+            LCS::registerDatabaseOperator($app->make(DatabaseOperatorInterface::class));
 
             return new LLCS($app);
         });
@@ -51,7 +76,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs').'.',
+            'as' => ($config['as'] ?? 'lcs') . '.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')
@@ -66,7 +91,6 @@ class LLCSServiceProvider extends PackageServiceProvider
 
         Log::info('Booting LLCS');
 
-        // Bootstrap LCS with Laravel configuration
         try {
             if (! LCS::isInitialized()) {
                 LCS::bootstrap([
