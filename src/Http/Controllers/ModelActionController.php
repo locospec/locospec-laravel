@@ -11,10 +11,6 @@ class ModelActionController extends Controller
 {
     /**
      * Handle all model actions
-     *
-     * @param  string  $model  Hyphenated model name from URL
-     * @param  string  $action  Hyphenated action name from URL
-     * @return \Illuminate\Http\JsonResponse
      */
     public function handle(Request $request, string $model, string $action)
     {
@@ -23,14 +19,11 @@ class ModelActionController extends Controller
             $modelName = $this->convertToModelName($model);
             $actionName = $this->convertToActionName($action);
 
-            // Get input data from request
-            $input = $request->all();
-
-            // Execute the action via LCS
-            $result = LLCS::getEngine()->executeModelAction(
+            // Execute the action via LLCS facade
+            $result = LLCS::executeModelAction(
                 $modelName,
                 $actionName,
-                $input
+                $request->all()
             );
 
             return response()->json([
@@ -48,7 +41,6 @@ class ModelActionController extends Controller
 
     /**
      * Convert hyphenated model name to LCS format
-     * e.g., 'blog-post' -> 'blogPost'
      */
     protected function convertToModelName(string $model): string
     {
@@ -57,7 +49,6 @@ class ModelActionController extends Controller
 
     /**
      * Convert hyphenated action name to LCS format
-     * e.g., 'read-one' -> 'readOne'
      */
     protected function convertToActionName(string $action): string
     {

@@ -8,7 +8,7 @@ class LLCS
 {
     protected $app;
 
-    protected $engine;
+    protected LCS $engine;
 
     public function __construct($app)
     {
@@ -26,15 +26,22 @@ class LLCS
         return $this->engine->getRegistryManager();
     }
 
-    // Add methods to expose EnginePhp functionality with Laravel integration
     public function processSpecification(string $path)
     {
         return $this->engine->processSpecificationFile($path);
     }
 
-    // Add Laravel-specific helper methods
     public function getModelDefinition(string $modelName)
     {
         return $this->engine->getRegistryManager()->get('model', $modelName);
+    }
+
+    /**
+     * Execute a model action
+     */
+    public function executeModelAction(string $modelName, string $actionName, array $input = []): array
+    {
+        return $this->app->make('Locospec\LCS\Actions\ActionOrchestrator')
+            ->execute($modelName, $actionName, $input);
     }
 }
