@@ -3,13 +3,13 @@
 namespace Locospec\LLCS\Database;
 
 use Illuminate\Support\Facades\DB;
-use Locospec\LCS\Database\DatabaseOperatorInterface;
+use Locospec\LCS\Registry\DatabaseDriverInterface;
 use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 
-class DatabaseOperator implements DatabaseOperatorInterface
+class DatabaseOperator implements DatabaseDriverInterface
 {
     private SelectOperationHandler $selectHandler;
 
@@ -26,6 +26,11 @@ class DatabaseOperator implements DatabaseOperatorInterface
             $jsonPathHandler,
             $formatter
         );
+    }
+
+    public function getName(): string
+    {
+        return 'laravel';
     }
 
     public function run(array $operations): array

@@ -27,6 +27,11 @@ class LLCS
         return $this->engine->getRegistryManager();
     }
 
+    public function getDefaultDatabaseDriver()
+    {
+        return $this->engine->getDefaultDriverOfType("database_driver");
+    }
+
     public function processSpecification(string $path)
     {
         return $this->engine->processSpecificationFile($path);

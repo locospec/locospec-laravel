@@ -6,8 +6,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Locospec\LCS\Actions\ActionOrchestrator;
 use Locospec\LCS\Actions\StateMachineFactory;
-use Locospec\LCS\Database\DatabaseOperatorInterface;
 use Locospec\LCS\LCS;
+use Locospec\LCS\Registry\DatabaseDriverInterface;
 use Locospec\LLCS\Commands\LLCSCommand;
 use Locospec\LLCS\Database\DatabaseOperator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
@@ -38,7 +38,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         });
 
         // Register DatabaseOperator
-        $this->app->singleton(DatabaseOperatorInterface::class, function () {
+        $this->app->singleton(DatabaseDriverInterface::class, function () {
             return new DatabaseOperator;
         });
 
@@ -58,11 +58,11 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
             Log::info('Creating LLCS instance');
-
             // Register database operator with LCS
             $lcs = $app->make(LCS::class);
-            LCS::registerDatabaseOperator($app->make(DatabaseOperatorInterface::class));
-
+            $registryManager = $lcs->getRegistryManager();
+            $dbOperator = $app->make(DatabaseDriverInterface::class);
+            $registryManager->register('database_driver', $dbOperator);
             return new LLCS($app);
         });
 
@@ -77,7 +77,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs').'.',
+            'as' => ($config['as'] ?? 'lcs') . '.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')
