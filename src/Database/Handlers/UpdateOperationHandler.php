@@ -28,15 +28,15 @@ class UpdateOperationHandler implements OperationHandlerInterface
      */
     public function handle(array $operation): array
     {
-        if (!isset($operation['tableName'])) {
+        if (! isset($operation['tableName'])) {
             throw new \InvalidArgumentException('Table name is required');
         }
 
-        if (!isset($operation['data'])) {
+        if (! isset($operation['data'])) {
             throw new \InvalidArgumentException('Update data is required');
         }
 
-        if (!isset($operation['filters'])) {
+        if (! isset($operation['filters'])) {
             throw new \InvalidArgumentException('Update conditions (filters) are required');
         }
 

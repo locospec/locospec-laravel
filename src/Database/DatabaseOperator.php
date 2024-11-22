@@ -4,10 +4,10 @@ namespace Locospec\LLCS\Database;
 
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Registry\DatabaseDriverInterface;
+use Locospec\LLCS\Database\Handlers\DeleteOperationHandler;
 use Locospec\LLCS\Database\Handlers\InsertOperationHandler;
 use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
 use Locospec\LLCS\Database\Handlers\UpdateOperationHandler;
-use Locospec\LLCS\Database\Handlers\DeleteOperationHandler;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
@@ -15,8 +15,11 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class DatabaseOperator implements DatabaseDriverInterface
 {
     private SelectOperationHandler $selectHandler;
+
     private InsertOperationHandler $insertHandler;
+
     private UpdateOperationHandler $updateHandler;
+
     private DeleteOperationHandler $deleteHandler;
 
     private array $queryLog = [];

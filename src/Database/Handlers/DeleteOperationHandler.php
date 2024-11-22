@@ -28,11 +28,11 @@ class DeleteOperationHandler implements OperationHandlerInterface
      */
     public function handle(array $operation): array
     {
-        if (!isset($operation['tableName'])) {
+        if (! isset($operation['tableName'])) {
             throw new \InvalidArgumentException('Table name is required');
         }
 
-        if (!isset($operation['filters'])) {
+        if (! isset($operation['filters'])) {
             throw new \InvalidArgumentException('Delete conditions (filters) are required');
         }
 
