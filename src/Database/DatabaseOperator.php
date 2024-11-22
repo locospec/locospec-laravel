@@ -13,6 +13,7 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class DatabaseOperator implements DatabaseDriverInterface
 {
     private SelectOperationHandler $selectHandler;
+
     private InsertOperationHandler $insertHandler;
 
     private array $queryLog = [];

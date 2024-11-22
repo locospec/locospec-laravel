@@ -22,11 +22,11 @@ class InsertOperationHandler implements OperationHandlerInterface
      */
     public function handle(array $operation): array
     {
-        if (!isset($operation['tableName'])) {
+        if (! isset($operation['tableName'])) {
             throw new \InvalidArgumentException('Table name is required');
         }
 
-        if (!isset($operation['data']) || !is_array($operation['data']) || empty($operation['data'])) {
+        if (! isset($operation['data']) || ! is_array($operation['data']) || empty($operation['data'])) {
             throw new \InvalidArgumentException('Data array is required and cannot be empty');
         }
 
@@ -40,6 +40,7 @@ class InsertOperationHandler implements OperationHandlerInterface
 
         // Get the SQL query that would be executed
         $this->lastQuery = $query->toRawSql();
+
         // Format and return the results
         return $this->formatter->format(
             $operation['data'],
