@@ -5,45 +5,54 @@ namespace Locospec\LLCS\Database\Handlers;
 use Illuminate\Support\Facades\DB;
 use Locospec\LLCS\Database\Contracts\OperationHandlerInterface;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
+use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 
-class InsertOperationHandler implements OperationHandlerInterface
+class DeleteOperationHandler implements OperationHandlerInterface
 {
+    private WhereExpressionBuilder $whereBuilder;
+
     private QueryResultFormatter $formatter;
 
     private ?string $lastQuery = null;
 
-    public function __construct(QueryResultFormatter $formatter)
-    {
+    public function __construct(
+        WhereExpressionBuilder $whereBuilder,
+        QueryResultFormatter $formatter
+    ) {
+        $this->whereBuilder = $whereBuilder;
         $this->formatter = $formatter;
     }
 
     /**
-     * Handle insert operation following schema from database-operations/insert.json
+     * Handle delete operation following schema from database-operations/delete.json
      */
     public function handle(array $operation): array
     {
-        if (! isset($operation['tableName'])) {
+        if (!isset($operation['tableName'])) {
             throw new \InvalidArgumentException('Table name is required');
         }
 
-        if (! isset($operation['data']) || ! is_array($operation['data']) || empty($operation['data'])) {
-            throw new \InvalidArgumentException('Data array is required and cannot be empty');
+        if (!isset($operation['filters'])) {
+            throw new \InvalidArgumentException('Delete conditions (filters) are required');
         }
 
         $query = DB::table($operation['tableName']);
 
+        // Add where conditions
+        $this->whereBuilder->build($query, $operation['filters']);
+
         // Start timing
         $startTime = microtime(true);
 
-        // Execute the insert operation
-        $queryResult = $query->insert($operation['data']);
+        // Execute the delete operation
+        $numRowsAffected = $query->delete();
 
         // Get the SQL query that would be executed
         $this->lastQuery = $query->toRawSql();
 
         // Format and return the results
         return $this->formatter->format(
-            $operation['data'],
+            ['rows_affected' => $numRowsAffected],
             $this->lastQuery,
             $startTime
         );

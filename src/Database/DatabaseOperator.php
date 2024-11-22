@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Registry\DatabaseDriverInterface;
 use Locospec\LLCS\Database\Handlers\InsertOperationHandler;
 use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
+use Locospec\LLCS\Database\Handlers\UpdateOperationHandler;
+use Locospec\LLCS\Database\Handlers\DeleteOperationHandler;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
@@ -13,8 +15,9 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class DatabaseOperator implements DatabaseDriverInterface
 {
     private SelectOperationHandler $selectHandler;
-
     private InsertOperationHandler $insertHandler;
+    private UpdateOperationHandler $updateHandler;
+    private DeleteOperationHandler $deleteHandler;
 
     private array $queryLog = [];
 
@@ -27,6 +30,16 @@ class DatabaseOperator implements DatabaseDriverInterface
         $this->selectHandler = new SelectOperationHandler(
             $whereBuilder,
             $jsonPathHandler,
+            $formatter
+        );
+
+        $this->updateHandler = new UpdateOperationHandler(
+            $whereBuilder,
+            $formatter
+        );
+
+        $this->deleteHandler = new DeleteOperationHandler(
+            $whereBuilder,
             $formatter
         );
 
@@ -72,6 +85,8 @@ class DatabaseOperator implements DatabaseDriverInterface
         $result = match ($operation['type']) {
             'select' => $this->selectHandler->handle($operation),
             'insert' => $this->insertHandler->handle($operation),
+            'update' => $this->updateHandler->handle($operation),
+            'delete' => $this->deleteHandler->handle($operation),
             default => throw new \InvalidArgumentException("Unsupported operation type: {$operation['type']}")
         };
 
@@ -81,6 +96,14 @@ class DatabaseOperator implements DatabaseDriverInterface
         }
 
         if ($sql = $this->insertHandler->getQuery()) {
+            $this->queryLog[] = $sql;
+        }
+
+        if ($sql = $this->updateHandler->getQuery()) {
+            $this->queryLog[] = $sql;
+        }
+
+        if ($sql = $this->deleteHandler->getQuery()) {
             $this->queryLog[] = $sql;
         }
 
