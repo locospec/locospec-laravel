@@ -4,6 +4,7 @@ namespace Locospec\LLCS\Database;
 
 use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Registry\DatabaseDriverInterface;
+use Locospec\LLCS\Database\Handlers\InsertOperationHandler;
 use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
@@ -12,6 +13,7 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class DatabaseOperator implements DatabaseDriverInterface
 {
     private SelectOperationHandler $selectHandler;
+    private InsertOperationHandler $insertHandler;
 
     private array $queryLog = [];
 
@@ -24,6 +26,10 @@ class DatabaseOperator implements DatabaseDriverInterface
         $this->selectHandler = new SelectOperationHandler(
             $whereBuilder,
             $jsonPathHandler,
+            $formatter
+        );
+
+        $this->insertHandler = new InsertOperationHandler(
             $formatter
         );
     }
@@ -64,11 +70,16 @@ class DatabaseOperator implements DatabaseDriverInterface
     {
         $result = match ($operation['type']) {
             'select' => $this->selectHandler->handle($operation),
+            'insert' => $this->insertHandler->handle($operation),
             default => throw new \InvalidArgumentException("Unsupported operation type: {$operation['type']}")
         };
 
         // Log the query
         if ($sql = $this->selectHandler->getQuery()) {
+            $this->queryLog[] = $sql;
+        }
+
+        if ($sql = $this->insertHandler->getQuery()) {
             $this->queryLog[] = $sql;
         }
 

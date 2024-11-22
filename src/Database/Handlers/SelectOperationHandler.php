@@ -63,7 +63,7 @@ class SelectOperationHandler implements OperationHandlerInterface
                 $attribute = str_contains($sort['attribute'], '->')
                     ? $this->jsonPathHandler->handle($sort['attribute'])
                     : $sort['attribute'];
-                $direction = $sort['order'] ?? 'ASC';
+                $direction = $sort['direction'] ?? 'ASC';
                 $query->orderBy($attribute, $direction);
             }
         }
@@ -87,7 +87,6 @@ class SelectOperationHandler implements OperationHandlerInterface
     private function handlePagination($query, array $pagination): array
     {
         $startTime = microtime(true);
-        $this->lastQuery = $query->toRawSql();
 
         if ($pagination['type'] === 'cursor') {
             $results = $query->cursorPaginate(
@@ -104,6 +103,8 @@ class SelectOperationHandler implements OperationHandlerInterface
                 $pagination['page']
             );
         }
+
+        $this->lastQuery = $query->toRawSql();
 
         return $this->formatter->formatPagination($results, $this->lastQuery, $startTime);
     }
