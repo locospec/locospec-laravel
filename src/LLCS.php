@@ -29,7 +29,7 @@ class LLCS
 
     public function getDefaultDatabaseDriver()
     {
-        return $this->engine->getDefaultDriverOfType("database_driver");
+        return $this->engine->getDefaultDriverOfType('database_driver');
     }
 
     public function processSpecification(string $path)
