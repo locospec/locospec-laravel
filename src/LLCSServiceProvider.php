@@ -63,6 +63,7 @@ class LLCSServiceProvider extends PackageServiceProvider
             $registryManager = $lcs->getRegistryManager();
             $dbOperator = $app->make(DatabaseDriverInterface::class);
             $registryManager->register('database_driver', $dbOperator);
+
             return new LLCS($app);
         });
 
@@ -77,7 +78,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs') . '.',
+            'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')
