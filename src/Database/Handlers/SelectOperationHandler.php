@@ -11,8 +11,11 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class SelectOperationHandler implements OperationHandlerInterface
 {
     private WhereExpressionBuilder $whereBuilder;
+
     private JsonPathHandler $jsonPathHandler;
+
     private QueryResultFormatter $formatter;
+
     private ?string $lastQuery = null;
 
     public function __construct(
@@ -30,8 +33,8 @@ class SelectOperationHandler implements OperationHandlerInterface
      */
     public function handle(array $operation): array
     {
-        if (!isset($operation['tableName'])) {
-            throw new \InvalidArgumentException("Table name is required");
+        if (! isset($operation['tableName'])) {
+            throw new \InvalidArgumentException('Table name is required');
         }
 
         $query = DB::table($operation['tableName']);
@@ -54,7 +57,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Handle sorts
         if (isset($operation['sorts'])) {
             foreach ($operation['sorts'] as $sort) {
-                if (!isset($sort['attribute'])) {
+                if (! isset($sort['attribute'])) {
                     continue;
                 }
                 $attribute = str_contains($sort['attribute'], '->')

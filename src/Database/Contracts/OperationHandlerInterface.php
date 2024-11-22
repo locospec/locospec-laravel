@@ -2,14 +2,12 @@
 
 namespace Locospec\LLCS\Database\Contracts;
 
-use Illuminate\Database\Query\Builder;
-
 interface OperationHandlerInterface
 {
     /**
      * Handle the database operation
      *
-     * @param array $operation The operation parameters
+     * @param  array  $operation  The operation parameters
      * @return array Operation result with metadata
      */
     public function handle(array $operation): array;

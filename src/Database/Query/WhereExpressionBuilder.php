@@ -3,7 +3,6 @@
 namespace Locospec\LLCS\Database\Query;
 
 use Illuminate\Database\Query\Builder;
-use Locospec\LLCS\Database\Query\JsonPathHandler;
 
 class WhereExpressionBuilder
 {
@@ -37,6 +36,7 @@ class WhereExpressionBuilder
                     $q->$method(function ($subQuery) use ($condition) {
                         $this->buildFilterGroup($subQuery, $condition);
                     });
+
                     continue;
                 }
 
@@ -64,8 +64,8 @@ class WhereExpressionBuilder
             'lte' => $query->$method($attribute, '<=', $value),
             'like' => $query->$method($attribute, 'LIKE', "%$value%"),
             'notLike' => $query->$method($attribute, 'NOT LIKE', "%$value%"),
-            'in' => $query->{"{$method}In"}($attribute, (array)$value),
-            'notIn' => $query->{"{$method}NotIn"}($attribute, (array)$value),
+            'in' => $query->{"{$method}In"}($attribute, (array) $value),
+            'notIn' => $query->{"{$method}NotIn"}($attribute, (array) $value),
             'isNull' => $query->{"{$method}Null"}($attribute),
             'isNotNull' => $query->{"{$method}NotNull"}($attribute),
             default => throw new \InvalidArgumentException("Unsupported operator: {$operator}")
