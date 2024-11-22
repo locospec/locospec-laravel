@@ -9,7 +9,6 @@ interface DatabaseProcessorInterface
     /**
      * Process a database operation
      *
-     * @param DatabaseOperationInterface $operation
      * @return array{
      *   result: mixed,
      *   sql: string,

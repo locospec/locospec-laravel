@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\DB;
 use Locospec\LCS\Database\Operations\DatabaseOperationInterface;
 use Locospec\LCS\Database\Operations\InsertOperation;
 use Locospec\LCS\Exceptions\InvalidArgumentException;
-use Locospec\LLCS\Database\DatabaseUtils;
 
 class InsertProcessor implements DatabaseProcessorInterface
 {
@@ -15,7 +14,7 @@ class InsertProcessor implements DatabaseProcessorInterface
      */
     public function process(DatabaseOperationInterface $operation): array
     {
-        if (!$operation instanceof InsertOperation) {
+        if (! $operation instanceof InsertOperation) {
             throw new InvalidArgumentException('InsertProcessor can only process InsertOperation');
         }
 
@@ -52,8 +51,8 @@ class InsertProcessor implements DatabaseProcessorInterface
                 'timing' => [
                     'started_at' => $startTime,
                     'ended_at' => $endTime,
-                    'duration' => $endTime - $startTime
-                ]
+                    'duration' => $endTime - $startTime,
+                ],
             ];
         } catch (\Exception $e) {
             throw new \RuntimeException(
@@ -66,10 +65,6 @@ class InsertProcessor implements DatabaseProcessorInterface
 
     /**
      * Construct the SQL string for the insert operation
-     *
-     * @param string $table
-     * @param array $data
-     * @return string
      */
     private function constructSql(string $table, array $data): string
     {
@@ -86,7 +81,7 @@ class InsertProcessor implements DatabaseProcessorInterface
 
             // Create placeholder groups for each row
             for ($i = 0; $i < count($data); $i++) {
-                $placeholders[] = '(' . implode(',', array_fill(0, count($columns), '?')) . ')';
+                $placeholders[] = '('.implode(',', array_fill(0, count($columns), '?')).')';
             }
 
             $sql = sprintf(
@@ -134,6 +129,6 @@ class InsertProcessor implements DatabaseProcessorInterface
      */
     private function quoteIdentifier(string $identifier): string
     {
-        return '`' . str_replace('`', '``', $identifier) . '`';
+        return '`'.str_replace('`', '``', $identifier).'`';
     }
 }

@@ -12,13 +12,14 @@ use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 class DatabaseOperator implements DatabaseOperatorInterface
 {
     private SelectOperationHandler $selectHandler;
+
     private array $queryLog = [];
 
     public function __construct()
     {
-        $jsonPathHandler = new JsonPathHandler();
+        $jsonPathHandler = new JsonPathHandler;
         $whereBuilder = new WhereExpressionBuilder($jsonPathHandler);
-        $formatter = new QueryResultFormatter();
+        $formatter = new QueryResultFormatter;
 
         $this->selectHandler = new SelectOperationHandler(
             $whereBuilder,
@@ -76,7 +77,7 @@ class DatabaseOperator implements DatabaseOperatorInterface
         }
 
         if (count($operations) === 1) {
-            return !in_array($operations[0]['type'], ['select', 'count']);
+            return ! in_array($operations[0]['type'], ['select', 'count']);
         }
 
         return false;
