@@ -7,6 +7,7 @@ use Locospec\LLCS\Database\Contracts\OperationHandlerInterface;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
+use PDO;
 
 class SelectOperationHandler implements OperationHandlerInterface
 {
@@ -74,9 +75,9 @@ class SelectOperationHandler implements OperationHandlerInterface
         }
 
         // Execute query
-        $this->lastQuery = $query->toRawSql();
         $startTime = microtime(true);
-        $results = $query->get();
+        $results = $query->select()->get();
+        $this->lastQuery = $query->toRawSql();
 
         return $this->formatter->format($results, $this->lastQuery, $startTime);
     }

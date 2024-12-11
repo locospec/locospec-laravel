@@ -30,6 +30,10 @@ class QueryResultFormatter
      */
     public function formatPagination(mixed $results, string $sql, float $startTime): array
     {
+        $results->through(function ($item) {
+            return (array) $item;
+        });
+
         $formatted = $this->format($results->items(), $sql, $startTime);
         $formatted['pagination'] = $this->getPaginationMetadata($results);
 

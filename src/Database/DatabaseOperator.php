@@ -71,9 +71,9 @@ class DatabaseOperator implements DatabaseDriverInterface
 
     private function executeOperations(array $operations): array
     {
-        if (count($operations) === 1) {
-            return $this->executeSingleOperation($operations[0]);
-        }
+        // if (count($operations) === 1) {
+        //     return $this->executeSingleOperation($operations[0]);
+        // }
 
         $results = [];
         foreach ($operations as $operation) {
@@ -85,13 +85,15 @@ class DatabaseOperator implements DatabaseDriverInterface
 
     private function executeSingleOperation(array $operation): array
     {
-        $result = match ($operation['type']) {
+        $dbOpResult = match ($operation['type']) {
             'select' => $this->selectHandler->handle($operation),
             'insert' => $this->insertHandler->handle($operation),
             'update' => $this->updateHandler->handle($operation),
             'delete' => $this->deleteHandler->handle($operation),
             default => throw new \InvalidArgumentException("Unsupported operation type: {$operation['type']}")
         };
+
+        $dbOpResult['operation'] = $operation;
 
         // Log the query
         if ($sql = $this->selectHandler->getQuery()) {
@@ -110,7 +112,7 @@ class DatabaseOperator implements DatabaseDriverInterface
             $this->queryLog[] = $sql;
         }
 
-        return $result;
+        return $dbOpResult;
     }
 
     private function needsTransaction(array $operations): bool
