@@ -7,7 +7,6 @@ use Locospec\LLCS\Database\Contracts\OperationHandlerInterface;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
-use PDO;
 
 class SelectOperationHandler implements OperationHandlerInterface
 {
