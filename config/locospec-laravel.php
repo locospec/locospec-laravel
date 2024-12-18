@@ -6,6 +6,10 @@ return [
         'locospec',
     ],
 
+    "drivers" => [
+        "database_connections" => []
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Route Configuration
