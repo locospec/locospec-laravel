@@ -30,7 +30,7 @@ class InsertOperationHandler implements OperationHandlerInterface
             throw new \InvalidArgumentException('Data array is required and cannot be empty');
         }
 
-        $query = DB::table($operation['tableName']);
+        $query = DB::connection($operation['connection'])->table($operation['tableName']);
 
         // Start timing
         $startTime = microtime(true);

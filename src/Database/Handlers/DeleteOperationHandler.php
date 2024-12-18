@@ -36,7 +36,7 @@ class DeleteOperationHandler implements OperationHandlerInterface
             throw new \InvalidArgumentException('Delete conditions (filters) are required');
         }
 
-        $query = DB::table($operation['tableName']);
+        $query = DB::connection($operation['connection'])->table($operation['tableName']);
 
         // Add where conditions
         $this->whereBuilder->build($query, $operation['filters']);

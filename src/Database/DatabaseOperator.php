@@ -85,6 +85,9 @@ class DatabaseOperator implements DatabaseDriverInterface
 
     private function executeSingleOperation(array $operation): array
     {
+        $connection = $operation['connection'] !== "default" ? $operation['connection'] : env('DB_CONNECTION');
+        $operation['connection'] = $connection;
+
         $dbOpResult = match ($operation['type']) {
             'select' => $this->selectHandler->handle($operation),
             'insert' => $this->insertHandler->handle($operation),
