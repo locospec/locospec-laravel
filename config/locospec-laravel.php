@@ -6,8 +6,8 @@ return [
         'locospec',
     ],
 
-    "drivers" => [
-        "database_connections" => []
+    'drivers' => [
+        'database_connections' => [],
     ],
 
     /*
