@@ -2,6 +2,7 @@
 
 namespace Locospec\LLCS;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Locospec\LCS\Actions\ActionOrchestrator;
@@ -58,11 +59,32 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
             Log::info('Creating LLCS instance');
+
+            $databaseConnections = config('locospec-laravel.drivers.database_connections', []);
+
             // Register database operator with LCS
             $lcs = $app->make(LCS::class);
             $registryManager = $lcs->getRegistryManager();
             $dbOperator = $app->make(DatabaseDriverInterface::class);
-            $registryManager->register('database_driver', $dbOperator);
+
+            $registryManager->register(
+                'database_driver',
+                ['name' => 'default', 'className' => $dbOperator]
+            );
+
+            foreach ($databaseConnections as $key => $databaseConnection) {
+
+                if ($databaseConnection === "default") {
+                    throw new Exception(
+                        'Invalid connection name default'
+                    );
+                }
+
+                $registryManager->register(
+                    'database_driver',
+                    ['name' => $databaseConnection, 'className' => $dbOperator]
+                );
+            }
 
             return new LLCS($app);
         });
@@ -78,7 +100,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
-            'as' => ($config['as'] ?? 'lcs').'.',
+            'as' => ($config['as'] ?? 'lcs') . '.',
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '[a-z0-9-]+')

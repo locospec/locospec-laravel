@@ -37,7 +37,7 @@ class SelectOperationHandler implements OperationHandlerInterface
             throw new \InvalidArgumentException('Table name is required');
         }
 
-        $query = DB::table($operation['tableName']);
+        $query = DB::connection()->table($operation['tableName']);
 
         // Handle attributes (select columns)
         if (isset($operation['attributes'])) {
