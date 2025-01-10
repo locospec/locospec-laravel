@@ -127,6 +127,7 @@ class LLCSServiceProvider extends PackageServiceProvider
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+            throw $e;
         }
     }
 }
