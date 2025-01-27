@@ -33,7 +33,7 @@ class LLCSServiceProvider extends PackageServiceProvider
 
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
-            Log::info('Creating LCS instance');
+            LCS::getLogger()->info('Creating LCS instance');
 
             return new LCS;
         });
@@ -119,6 +119,7 @@ class LLCSServiceProvider extends PackageServiceProvider
             if (! LCS::isInitialized()) {
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
+                    'logging' => config('locospec-laravel.logging', [])
                 ]);
                 Log::info('LCS bootstrapped successfully');
             }
