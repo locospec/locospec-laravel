@@ -119,7 +119,7 @@ class LLCSServiceProvider extends PackageServiceProvider
             if (! LCS::isInitialized()) {
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
-                    'logging' => config('locospec-laravel.logging', [])
+                    'logging' => config('locospec-laravel.logging', []),
                 ]);
                 Log::info('LCS bootstrapped successfully');
             }

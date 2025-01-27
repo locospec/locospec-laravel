@@ -61,15 +61,17 @@ class DatabaseOperator implements DatabaseDriverInterface
     {
         LLCS::getLogger()->info('Running database operations', ['operationCount' => count($operations)]);
         $useTransaction = $this->needsTransaction($operations);
-        
+
         if ($useTransaction) {
             LLCS::getLogger()->info('Executing operations inside a transaction');
+
             return DB::transaction(function () use ($operations) {
                 return $this->executeOperations($operations);
             });
         }
 
         LLCS::getLogger()->info('Executing operations without a transaction');
+
         return $this->executeOperations($operations);
     }
 
@@ -84,6 +86,7 @@ class DatabaseOperator implements DatabaseDriverInterface
             $results[] = $this->executeSingleOperation($operation);
         }
         LLCS::getLogger()->info('All operations executed successfully');
+
         return $results;
     }
 
@@ -94,7 +97,7 @@ class DatabaseOperator implements DatabaseDriverInterface
 
         LLCS::getLogger()->info('Executing single database operation', [
             'operationType' => $operation['type'],
-            'connection' => $connection
+            'connection' => $connection,
         ]);
 
         $dbOpResult = match ($operation['type']) {
@@ -126,7 +129,7 @@ class DatabaseOperator implements DatabaseDriverInterface
 
         LLCS::getLogger()->info('Operation executed successfully', [
             'operationType' => $operation['type'],
-            'query' => $dbOpResult['sql'] ?? null
+            'query' => $dbOpResult['sql'] ?? null,
         ]);
 
         return $dbOpResult;
