@@ -22,6 +22,11 @@ class LLCS
         return $this->engine;
     }
 
+    public function getLogger()
+    {
+        return $this->engine->getLogger();
+    }
+
     public function getRegistryManager()
     {
         return $this->engine->getRegistryManager();

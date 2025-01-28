@@ -11,6 +11,7 @@ use Locospec\LLCS\Database\Handlers\UpdateOperationHandler;
 use Locospec\LLCS\Database\Query\JsonPathHandler;
 use Locospec\LLCS\Database\Query\QueryResultFormatter;
 use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
+use Locospec\LLCS\Facades\LLCS;
 
 class DatabaseOperator implements DatabaseDriverInterface
 {
@@ -58,13 +59,18 @@ class DatabaseOperator implements DatabaseDriverInterface
 
     public function run(array $operations): array
     {
+        LLCS::getLogger()->info('Running database operations', ['operationCount' => count($operations)]);
         $useTransaction = $this->needsTransaction($operations);
 
         if ($useTransaction) {
+            LLCS::getLogger()->info('Executing operations inside a transaction');
+
             return DB::transaction(function () use ($operations) {
                 return $this->executeOperations($operations);
             });
         }
+
+        LLCS::getLogger()->info('Executing operations without a transaction');
 
         return $this->executeOperations($operations);
     }
@@ -74,11 +80,12 @@ class DatabaseOperator implements DatabaseDriverInterface
         // if (count($operations) === 1) {
         //     return $this->executeSingleOperation($operations[0]);
         // }
-
+        LLCS::getLogger()->info('Processing multiple database operations', ['operationCount' => count($operations)]);
         $results = [];
         foreach ($operations as $operation) {
             $results[] = $this->executeSingleOperation($operation);
         }
+        LLCS::getLogger()->info('All operations executed successfully');
 
         return $results;
     }
@@ -87,6 +94,11 @@ class DatabaseOperator implements DatabaseDriverInterface
     {
         $connection = $operation['connection'] !== 'default' ? $operation['connection'] : env('DB_CONNECTION');
         $operation['connection'] = $connection;
+
+        LLCS::getLogger()->info('Executing single database operation', [
+            'operationType' => $operation['type'],
+            'connection' => $connection,
+        ]);
 
         $dbOpResult = match ($operation['type']) {
             'select' => $this->selectHandler->handle($operation),
@@ -114,6 +126,11 @@ class DatabaseOperator implements DatabaseDriverInterface
         if ($sql = $this->deleteHandler->getQuery()) {
             $this->queryLog[] = $sql;
         }
+
+        LLCS::getLogger()->info('Operation executed successfully', [
+            'operationType' => $operation['type'],
+            'query' => $dbOpResult['sql'] ?? null,
+        ]);
 
         return $dbOpResult;
     }
