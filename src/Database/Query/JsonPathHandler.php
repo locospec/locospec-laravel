@@ -13,6 +13,7 @@ class JsonPathHandler
     public function handle(string $path, ?string $alias = null): Expression
     {
         $expression = $this->buildJsonPath($path);
+
         // Aliase for the json column
         // if ($alias !== null) {
         //     $expression .= ' as '.$alias;
