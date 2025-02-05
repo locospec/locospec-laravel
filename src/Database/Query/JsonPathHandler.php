@@ -14,12 +14,12 @@ class JsonPathHandler
     {
         $expression = $this->buildJsonPath($path);
 
-        if ($alias !== null) {
-            $expression .= ' as '.$alias;
-        } elseif (str_contains($path, '->')) {
-            $expression .= ' as '.$this->generateAlias($path);
-        }
-
+        // Aliase for the json column
+        // if ($alias !== null) {
+        // $expression .= ' as '.$alias;
+        // } elseif (str_contains($path, '->')) {
+        // $expression .= ' as '.$this->generateAlias($path);
+        // }
         return DB::raw($expression);
     }
 
@@ -35,10 +35,10 @@ class JsonPathHandler
             return $column;
         }
 
-        return $column.'->'.implode('->', array_map(
+        return $column.'->'.implode('->>', array_map(
             fn ($part) => "'$part'",
             $parts
-        )).'>>';
+        ));
     }
 
     /**
