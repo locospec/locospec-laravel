@@ -16,9 +16,9 @@ class JsonPathHandler
 
         // Aliase for the json column
         // if ($alias !== null) {
-        //     $expression .= ' as '.$alias;
+        // $expression .= ' as '.$alias;
         // } elseif (str_contains($path, '->')) {
-        //     $expression .= ' as '.$this->generateAlias($path);
+        // $expression .= ' as '.$this->generateAlias($path);
         // }
         return DB::raw($expression);
     }
