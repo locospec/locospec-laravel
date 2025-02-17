@@ -56,20 +56,18 @@ class WhereExpressionBuilder
         }
 
         match ($operator) {
-            'eq' => $query->$method($attribute, '=', $value),
-            'neq' => $query->$method($attribute, '!=', $value),
-            'gt' => $query->$method($attribute, '>', $value),
-            'lt' => $query->$method($attribute, '<', $value),
-            'gte' => $query->$method($attribute, '>=', $value),
-            '>=' => $query->$method($attribute, '>=', $value),
-            'lte' => $query->$method($attribute, '<=', $value),
-            '<=' => $query->$method($attribute, '<=', $value),
-            'like' => $query->$method($attribute, 'LIKE', "%$value%"),
-            'notLike' => $query->$method($attribute, 'NOT LIKE', "%$value%"),
-            'in' => $query->{"{$method}In"}($attribute, (array) $value),
-            'notIn' => $query->{"{$method}NotIn"}($attribute, (array) $value),
-            'isNull' => $query->{"{$method}Null"}($attribute),
-            'isNotNull' => $query->{"{$method}NotNull"}($attribute),
+            'is' => $query->$method($attribute, '=', $value),
+            'is_not' => $query->$method($attribute, '!=', $value),
+            'greater_than' => $query->$method($attribute, '>', $value),
+            'less_than' => $query->$method($attribute, '<', $value),
+            'greater_than_or_equal' => $query->$method($attribute, '>=', $value),
+            'less_than_or_equal' => $query->$method($attribute, '<=', $value),
+            'contains' => $query->$method($attribute, 'LIKE', "%$value%"),
+            'not_contains' => $query->$method($attribute, 'NOT LIKE', "%$value%"),
+            'is_any_of' => $query->{"{$method}In"}($attribute, (array) $value),
+            'is_none_of' => $query->{"{$method}NotIn"}($attribute, (array) $value),
+            'is_empty' => $query->{"{$method}Null"}($attribute),
+            'is_not_empty' => $query->{"{$method}NotNull"}($attribute),
             default => throw new \InvalidArgumentException("Unsupported operator: {$operator}")
         };
     }
