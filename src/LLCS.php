@@ -4,6 +4,7 @@ namespace Locospec\LLCS;
 
 use Locospec\Engine\LCS;
 use Locospec\Engine\StateMachine\StateFlowPacket;
+use Locospec\Engine\Registry\ValidatorInterface;
 
 class LLCS
 {
@@ -54,5 +55,10 @@ class LLCS
     {
         return $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
             ->execute($modelName, $actionName, $input);
+    }
+
+    public function getDefaultValidator(): ValidatorInterface
+    {
+        return $this->app->make(ValidatorInterface::class);
     }
 }
