@@ -7,23 +7,22 @@ use Locospec\Engine\Registry\ValidatorInterface;
 
 class DefaultValidator implements ValidatorInterface
 {
-     /**
+    /**
      * Validate input data based on a given JSON schema.
      *
-     * @param array $input  The input data to validate.
-     * @param array $schema The JSON schema with validation rules.
+     * @param  array  $input  The input data to validate.
+     * @param  array  $schema  The JSON schema with validation rules.
      * @return mixed True if validation passes, or a collection of errors.
      */
-
     public function validate(array $input, array $schema)
     {
         $rules = [];
         $messages = [];
-        
-        dump(["input" => $input, "schema" => $schema]);
+
+        dump(['input' => $input, 'schema' => $schema]);
 
         foreach ($schema as $field => $definition) {
-            dump(["field" => $field, "definition" => $definition]);
+            dump(['field' => $field, 'definition' => $definition]);
             $fieldRules = [];
             if (isset($definition['validations']) && is_array($definition['validations'])) {
                 foreach ($definition['validations'] as $validation) {
@@ -36,7 +35,7 @@ class DefaultValidator implements ValidatorInterface
                             $messages["{$field}.{$ruleName}"] = $validation['message'];
                         }
                     } elseif (isset($validation['type'])) {
-                        // Testing for custom types 
+                        // Testing for custom types
                         switch ($validation['type']) {
                             case 'required':
                                 $fieldRules[] = 'required';
@@ -44,7 +43,7 @@ class DefaultValidator implements ValidatorInterface
                                 break;
                             case 'regex':
                                 if (isset($validation['pattern'])) {
-                                    $fieldRules[] = 'regex:' . $validation['pattern'];
+                                    $fieldRules[] = 'regex:'.$validation['pattern'];
                                     $messages["{$field}.regex"] = $validation['message'] ?? "{$field} format is invalid.";
                                 }
                                 break;
@@ -52,15 +51,15 @@ class DefaultValidator implements ValidatorInterface
                     }
                 }
             }
-            if (!empty($fieldRules)) {
+            if (! empty($fieldRules)) {
                 // Join multiple rules with a pipe (e.g., "required|min:3|regex:pattern").
                 $rules[$field] = implode('|', $fieldRules);
             }
         }
-        dump(["input" => $input, "rules" => $rules, "messages" => $messages]);
+        dump(['input' => $input, 'rules' => $rules, 'messages' => $messages]);
         // Create the Laravel validator instance.
         $validator = Validator::make($input, $rules, $messages);
-        dump(["validator" => $validator]);
+        dump(['validator' => $validator]);
 
         if ($validator->fails()) {
             // Return the validation errors.

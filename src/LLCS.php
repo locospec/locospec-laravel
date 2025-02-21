@@ -3,8 +3,8 @@
 namespace Locospec\LLCS;
 
 use Locospec\Engine\LCS;
-use Locospec\Engine\StateMachine\StateFlowPacket;
 use Locospec\Engine\Registry\ValidatorInterface;
+use Locospec\Engine\StateMachine\StateFlowPacket;
 
 class LLCS
 {

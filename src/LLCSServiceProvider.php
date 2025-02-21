@@ -9,13 +9,13 @@ use Locospec\Engine\Actions\ActionOrchestrator;
 use Locospec\Engine\Actions\StateMachineFactory;
 use Locospec\Engine\LCS;
 use Locospec\Engine\Registry\DatabaseDriverInterface;
+use Locospec\Engine\Registry\ValidatorInterface;
 use Locospec\LLCS\Commands\LLCSCommand;
 use Locospec\LLCS\Database\DatabaseOperator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
+use Locospec\LLCS\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Locospec\Engine\Registry\ValidatorInterface;
-use Locospec\LLCS\Validations\DefaultValidator;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
@@ -61,6 +61,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Bind the validator. Users can override this via the config if desired.
         $this->app->singleton(ValidatorInterface::class, function () {
             $validatorClass = config('locospec-laravel.validator', new DefaultValidator);
+
             return $validatorClass;
             // return new DefaultValidator;
         });
