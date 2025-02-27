@@ -3,7 +3,6 @@
 namespace Locospec\LLCS;
 
 use Locospec\Engine\LCS;
-use Locospec\Engine\StateMachine\StateFlowPacket;
 
 class LLCS
 {
@@ -53,7 +52,7 @@ class LLCS
     public function executeModelAction(string $modelName, string $actionName, array $input = []): array
     {
         $data = $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
-        ->execute($modelName, $actionName, $input);
+            ->execute($modelName, $actionName, $input);
 
         return $data->currentOutput;
     }
