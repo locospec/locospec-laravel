@@ -50,9 +50,11 @@ class LLCS
     /**
      * Execute a model action
      */
-    public function executeModelAction(string $modelName, string $actionName, array $input = []): StateFlowPacket
+    public function executeModelAction(string $modelName, string $actionName, array $input = []): array
     {
-        return $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
-            ->execute($modelName, $actionName, $input);
+        $data = $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
+        ->execute($modelName, $actionName, $input);
+
+        return $data->currentOutput;
     }
 }
