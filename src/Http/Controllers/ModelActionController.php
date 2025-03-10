@@ -18,7 +18,7 @@ class ModelActionController extends Controller
             // Convert hyphenated names to LCS format
             $modelName = $this->convertToModelName($model);
             $actionName = $this->convertToActionName($action);
-            
+
             // Execute the action via LLCS facade
             $result = LLCS::executeModelAction(
                 $modelName,

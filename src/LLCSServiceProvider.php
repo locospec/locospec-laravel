@@ -104,7 +104,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         ], function () {
             Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
                 ->where('model', '([a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
-                ->where('action', '(_[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)') 
+                ->where('action', '(_[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
                 ->name('model.action');
         });
     }
