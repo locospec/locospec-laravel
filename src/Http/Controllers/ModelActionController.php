@@ -28,7 +28,8 @@ class ModelActionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data' => $result['data'],
+                'meta' => $result['meta']??[],
             ]);
         } catch (\Exception $e) {
             return response()->json([

@@ -43,11 +43,12 @@ class SelectOperationHandler implements OperationHandlerInterface
         if (isset($operation['attributes'])) {
             $attributes = array_map(function ($attr) {
                 return str_contains($attr, '->')
-                    ? $this->jsonPathHandler->handle($attr)
-                    : $attr;
+                ? $this->jsonPathHandler->handle($attr)
+                : $attr;
             }, $operation['attributes']);
             $query->select($attributes);
         }
+        
 
         // Handle filters
         if (isset($operation['filters'])) {
