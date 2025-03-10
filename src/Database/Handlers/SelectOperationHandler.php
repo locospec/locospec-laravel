@@ -48,7 +48,6 @@ class SelectOperationHandler implements OperationHandlerInterface
             }, $operation['attributes']);
             $query->select($attributes);
         }
-        
 
         // Handle filters
         if (isset($operation['filters'])) {
