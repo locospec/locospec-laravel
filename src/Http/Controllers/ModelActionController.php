@@ -28,7 +28,8 @@ class ModelActionController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data' => $result['data'],
+                'meta' => $result['meta'] ?? [],
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -44,7 +45,7 @@ class ModelActionController extends Controller
      */
     protected function convertToModelName(string $model): string
     {
-        return Str::camel($model);
+        return Str::snake($model);
     }
 
     /**
@@ -52,6 +53,6 @@ class ModelActionController extends Controller
      */
     protected function convertToActionName(string $action): string
     {
-        return Str::camel($action);
+        return Str::snake($action);
     }
 }
