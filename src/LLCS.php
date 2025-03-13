@@ -3,8 +3,8 @@
 namespace Locospec\LLCS;
 
 use Locospec\Engine\LCS;
-use Locospec\Engine\Registry\ValidatorInterface;
 use Locospec\Engine\Registry\GeneratorInterface;
+use Locospec\Engine\Registry\ValidatorInterface;
 
 class LLCS
 {
@@ -63,7 +63,7 @@ class LLCS
     {
         return $this->app->make(ValidatorInterface::class);
     }
-    
+
     public function getDefaultGenerator(): GeneratorInterface
     {
         return $this->app->make(GeneratorInterface::class);

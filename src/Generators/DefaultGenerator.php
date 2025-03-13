@@ -2,17 +2,17 @@
 
 namespace Locospec\LLCS\Generators;
 
-use Locospec\Engine\Registry\GeneratorInterface;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Locospec\Engine\Registry\GeneratorInterface;
 
 class DefaultGenerator implements GeneratorInterface
 {
     /**
      * Generate the value based on type and options.
      *
-     * @param string $type The type of generator.
-     * @param array $options Additional options for the generator.
+     * @param  string  $type  The type of generator.
+     * @param  array  $options  Additional options for the generator.
      * @return mixed The generated value.
      */
     public function generate(string $type, array $options = [])
@@ -25,8 +25,8 @@ class DefaultGenerator implements GeneratorInterface
                 return isset($options['source']) ? Str::slug($options['source']) : null;
 
             case 'datetime':
-                return isset($options['value']) && $options['value'] === 'now' 
-                    ? Carbon::now()->toDateTimeString() 
+                return isset($options['value']) && $options['value'] === 'now'
+                    ? Carbon::now()->toDateTimeString()
                     : Carbon::parse($options['value'])->toDateTimeString();
 
             case 'boolean':
@@ -39,8 +39,8 @@ class DefaultGenerator implements GeneratorInterface
                 return $options['value'] ?? null;
 
             case 'enum':
-                return isset($options['values']) && is_array($options['values']) 
-                    ? $options['values'][0] 
+                return isset($options['values']) && is_array($options['values'])
+                    ? $options['values'][0]
                     : null;
 
             default:
