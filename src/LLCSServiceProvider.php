@@ -14,6 +14,10 @@ use Locospec\LLCS\Database\DatabaseOperator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Locospec\Engine\Registry\ValidatorInterface;
+use Locospec\LLCS\Validations\DefaultValidator;
+use Locospec\LLCS\Generators\DefaultGenerator;
+use Locospec\Engine\Registry\GeneratorInterface;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
@@ -54,6 +58,18 @@ class LLCSServiceProvider extends PackageServiceProvider
                 $app->make(LCS::class),
                 $app->make(StateMachineFactory::class)
             );
+        });
+
+        // Bind the validator. Users can override this via the config if desired.
+        $this->app->singleton(ValidatorInterface::class, function () {
+            $validatorClass = config('locospec-laravel.validator', new DefaultValidator);
+            return $validatorClass;
+        });
+
+        // Bind the generator. Users can override this via the config if desired.
+        $this->app->singleton(GeneratorInterface::class, function () {
+            $validatorClass = config('locospec-laravel.generator', new DefaultGenerator);
+            return $validatorClass;
         });
 
         // Register LLCS

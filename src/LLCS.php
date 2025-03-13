@@ -3,6 +3,8 @@
 namespace Locospec\LLCS;
 
 use Locospec\Engine\LCS;
+use Locospec\Engine\Registry\ValidatorInterface;
+use Locospec\Engine\Registry\GeneratorInterface;
 
 class LLCS
 {
@@ -49,11 +51,21 @@ class LLCS
     /**
      * Execute a model action
      */
-    public function executeModelAction(string $modelName, string $actionName, array $input = []): array
+    public function executeModelAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $modelName, string $actionName, array $input = []): array
     {
         $data = $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
-            ->execute($modelName, $actionName, $input);
+            ->execute($curdValidator, $generator, $modelName, $actionName, $input);
 
         return $data->currentOutput;
+    }
+
+    public function getDefaultValidator(): ValidatorInterface
+    {
+        return $this->app->make(ValidatorInterface::class);
+    }
+    
+    public function getDefaultGenerator(): GeneratorInterface
+    {
+        return $this->app->make(GeneratorInterface::class);
     }
 }

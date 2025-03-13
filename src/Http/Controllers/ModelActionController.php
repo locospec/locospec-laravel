@@ -21,6 +21,8 @@ class ModelActionController extends Controller
 
             // Execute the action via LLCS facade
             $result = LLCS::executeModelAction(
+                LLCS::getDefaultValidator(),
+                LLCS::getDefaultGenerator(),
                 $modelName,
                 $actionName,
                 $request->all()
@@ -34,7 +36,7 @@ class ModelActionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => json_decode($e->getMessage()),
                 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 400);
         }
