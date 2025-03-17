@@ -12,26 +12,23 @@ class DefaultValidator implements ValidatorInterface
      *
      * @param array $input  The input data to validate.
      * @param array $attributes The JSON attributes with validation rules.
-     * @param string $currentOperation The current operation (e.g., "_create", "_update", etc.).
+     * @param string $dbOp The current db operation (e.g., "insert", "update", etc.).
      * @return mixed True if validation passes, or a collection of errors.
      */
 
-    public function validate(array $input, array $attributes, string $currentOperation)
+    public function validate(array $input, array $attributes, string $dbOp)
     {
         $rules = [];
         $messages = [];
-        
-        // dump(["input" => $input, "schema" => $schema]);
 
         foreach ($attributes as $field => $definition) {
-            // dump(["field" => $field, "definition" => $definition]);
             $fieldRules = [];
             $validations = $definition->getValidations();
             if (isset($validations) && is_array($validations)) {
                 foreach ($validations as $validation) {
                     // If the validation has an 'operations' key, only apply if the current operation is allowed.
                     if (isset($validation->operations) && is_array($validation->operations)) {
-                        if (!in_array($currentOperation, $validation->operations)) {
+                        if (!in_array($dbOp, $validation->operations)) {
                             continue;
                         }
                     }
@@ -52,10 +49,9 @@ class DefaultValidator implements ValidatorInterface
                 $rules[$field] = implode('|', $fieldRules);
             }
         }
-        // dump(["input" => $input, "rules" => $rules, "messages" => $messages]);
+        
         // Create the Laravel validator instance.
         $validator = Validator::make($input, $rules, $messages);
-        // dump(["validator" => $validator]);
 
         if ($validator->fails()) {
             // Return the validation errors.
