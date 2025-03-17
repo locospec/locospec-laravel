@@ -17,34 +17,72 @@ class DefaultGenerator implements GeneratorInterface
      */
     public function generate(string $type, array $options = [])
     {
-        switch ($type) {
-            case 'uuid':
-                return Str::uuid()->toString();
+        try{
+            switch ($type) {
+                case 'uuid':
+                    return Str::uuid()->toString();
 
-            case 'slugGenerator':
-                return isset($options['source']) ? Str::slug($options['source']) : null;
+                case 'uniqueSlugGenerator':
+                    if (!isset($options['sourceValue'])) {
+                        return null;
+                    }
+                    
+                    // Generate the slug.
+                    $generatedSlug = Str::slug($options['sourceValue']);
+                    
+                    $options['dbOps']->add([
+                        "type" => "select",
+                        "modelName" => $options['modelName'],
+                        "filters" => [
+                            "op" => "and",
+                            "conditions" => [
+                                [
+                                    "attribute" =>  $options["attributeName"],
+                                    "op" => "contains",
+                                    "value" => $options['sourceValue']
+                                ],
+                            ]
+                        ]
+                    ]);
+                    $response = $options['dbOps']->execute($options['dbOperator']);
+                    
+                    // Extract existing slugs using array_column for optimization.
+                    $existingSlugs = array_column($response[0]['result'] ?? [], $options['attributeName']);
 
-            case 'datetime':
-                return isset($options['value']) && $options['value'] === 'now' 
-                    ? Carbon::now()->toDateTimeString() 
-                    : Carbon::parse($options['value'])->toDateTimeString();
+                    // Ensure the candidate slug is unique.
+                    $uniqueSlug = $generatedSlug;
+                    $counter = 1;
+                    while (in_array($uniqueSlug, $existingSlugs)) {
+                        $uniqueSlug = "{$generatedSlug}-{$counter}";
+                        $counter++;
+                    }
 
-            case 'boolean':
-                return isset($options['default']) ? (bool) $options['default'] : false;
+                    return $uniqueSlug;
 
-            case 'random_string':
-                return Str::random($options['length'] ?? 10);
+                case 'datetime':
+                    return isset($options['value']) && $options['value'] === 'now' 
+                        ? Carbon::now()->toDateTimeString() 
+                        : Carbon::parse($options['value'])->toDateTimeString();
 
-            case 'default_value':
-                return $options['value'] ?? null;
+                case 'boolean':
+                    return isset($options['default']) ? (bool) $options['default'] : false;
 
-            case 'enum':
-                return isset($options['values']) && is_array($options['values']) 
-                    ? $options['values'][0] 
-                    : null;
+                case 'random_string':
+                    return Str::random($options['length'] ?? 10);
 
-            default:
-                throw new \InvalidArgumentException("Unsupported generator type: {$type}");
+                case 'default_value':
+                    return $options['value'] ?? null;
+
+                case 'enum':
+                    return isset($options['values']) && is_array($options['values']) 
+                        ? $options['values'][0] 
+                        : null;
+
+                default:
+                    throw new \InvalidArgumentException("Unsupported generator type: {$type}");
+            }
+        }catch (\Exception $e) {
+            throw $e;
         }
     }
 }
