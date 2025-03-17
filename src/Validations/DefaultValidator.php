@@ -10,12 +10,11 @@ class DefaultValidator implements ValidatorInterface
     /**
      * Validate input data based on a given JSON schema.
      *
-     * @param array $input  The input data to validate.
-     * @param array $attributes The JSON attributes with validation rules.
-     * @param string $dbOp The current db operation (e.g., "insert", "update", etc.).
+     * @param  array  $input  The input data to validate.
+     * @param  array  $attributes  The JSON attributes with validation rules.
+     * @param  string  $dbOp  The current db operation (e.g., "insert", "update", etc.).
      * @return mixed True if validation passes, or a collection of errors.
      */
-
     public function validate(array $input, array $attributes, string $dbOp)
     {
         $rules = [];
@@ -28,7 +27,7 @@ class DefaultValidator implements ValidatorInterface
                 foreach ($validations as $validation) {
                     // If the validation has an 'operations' key, only apply if the current operation is allowed.
                     if (isset($validation->operations) && is_array($validation->operations)) {
-                        if (!in_array($dbOp, $validation->operations)) {
+                        if (! in_array($dbOp, $validation->operations)) {
                             continue;
                         }
                     }
@@ -49,7 +48,7 @@ class DefaultValidator implements ValidatorInterface
                 $rules[$field] = implode('|', $fieldRules);
             }
         }
-        
+
         // Create the Laravel validator instance.
         $validator = Validator::make($input, $rules, $messages);
 
