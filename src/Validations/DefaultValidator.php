@@ -7,7 +7,7 @@ use Locospec\Engine\Registry\ValidatorInterface;
 
 class DefaultValidator implements ValidatorInterface
 {
-     /**
+    /**
      * Validate input data based on a given JSON schema.
      *
      * @param array $input  The input data to validate.
@@ -41,10 +41,10 @@ class DefaultValidator implements ValidatorInterface
                         if (isset($validation->message)) {
                             $messages["{$field}.{$ruleName}"] = $validation->message;
                         }
-                    } 
+                    }
                 }
             }
-            if (!empty($fieldRules)) {
+            if (! empty($fieldRules)) {
                 // Join multiple rules with a pipe (e.g., "required|min:3|regex:pattern").
                 $rules[$field] = implode('|', $fieldRules);
             }

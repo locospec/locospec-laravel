@@ -2,17 +2,17 @@
 
 namespace Locospec\LLCS\Generators;
 
-use Locospec\Engine\Registry\GeneratorInterface;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Locospec\Engine\Registry\GeneratorInterface;
 
 class DefaultGenerator implements GeneratorInterface
 {
     /**
      * Generate the value based on type and options.
      *
-     * @param string $type The type of generator.
-     * @param array $options Additional options for the generator.
+     * @param  string  $type  The type of generator.
+     * @param  array  $options  Additional options for the generator.
      * @return mixed The generated value.
      */
     public function generate(string $type, array $options = [])
@@ -49,7 +49,7 @@ class DefaultGenerator implements GeneratorInterface
                     // Extract existing slugs using array_column for optimization.
                     $existingSlugs = array_column($response[0]['result'] ?? [], $options['attributeName']);
 
-                    // Ensure the candidate slug is unique.
+                    // Ensure the slug is unique.
                     $uniqueSlug = $generatedSlug;
                     $counter = 1;
                     while (in_array($uniqueSlug, $existingSlugs)) {
