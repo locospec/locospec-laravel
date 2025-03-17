@@ -37,7 +37,7 @@ class ModelActionController extends Controller
             return response()->json([
                 'success' => false,
                 'error' => json_decode($e->getMessage()),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null,
+                // 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 400);
         }
     }
