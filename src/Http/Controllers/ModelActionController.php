@@ -12,16 +12,18 @@ class ModelActionController extends Controller
     /**
      * Handle all model actions
      */
-    public function handle(Request $request, string $model, string $action)
+    public function handle(Request $request, string $spec, string $action)
     {
         try {
             // Convert hyphenated names to LCS format
-            $modelName = $this->convertToModelName($model);
+            $specName = $this->convertToModelName($spec);
             $actionName = $this->convertToActionName($action);
 
             // Execute the action via LLCS facade
             $result = LLCS::executeModelAction(
-                $modelName,
+                LLCS::getDefaultValidator(),
+                LLCS::getDefaultGenerator(),
+                $specName,
                 $actionName,
                 $request->all()
             );
@@ -34,8 +36,8 @@ class ModelActionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => $e->getMessage(),
-                'trace' => config('app.debug') ? $e->getTraceAsString() : null,
+                'error' => json_decode($e->getMessage()),
+                // 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
             ], 400);
         }
     }
