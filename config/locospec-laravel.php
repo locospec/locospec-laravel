@@ -30,9 +30,9 @@ return [
     ],
     'logging' => [
         // Base log file name (RotatingFileHandler will add dates)
-        "file_path" => base_path('storage/logs/locospec/engine.log'),
+        'file_path' => base_path('storage/logs/locospec/engine.log'),
 
         // Number of days to keep log files before deletion
-        "retention_days" => 7,
+        'retention_days' => 7,
     ],
 ];
