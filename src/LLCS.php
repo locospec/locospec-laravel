@@ -51,10 +51,10 @@ class LLCS
     /**
      * Execute a model action
      */
-    public function executeModelAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $modelName, string $actionName, array $input = []): array
+    public function executeModelAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, string $actionName, array $input = []): array
     {
         $data = $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
-            ->execute($curdValidator, $generator, $modelName, $actionName, $input);
+            ->execute($curdValidator, $generator, $specName, $actionName, $input);
 
         return $data->currentOutput;
     }

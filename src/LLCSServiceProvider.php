@@ -120,10 +120,10 @@ class LLCSServiceProvider extends PackageServiceProvider
             'middleware' => $config['middleware'] ?? ['api'],
             'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
-            Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
-                ->where('model', '([a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
+            Route::post('{spec}/{action}', [ModelActionController::class, 'handle'])
+                ->where('spec', '([a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
                 ->where('action', '(_[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
-                ->name('model.action');
+                ->name('spec.action');
         });
     }
 

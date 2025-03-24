@@ -12,18 +12,18 @@ class ModelActionController extends Controller
     /**
      * Handle all model actions
      */
-    public function handle(Request $request, string $model, string $action)
+    public function handle(Request $request, string $spec, string $action)
     {
         try {
             // Convert hyphenated names to LCS format
-            $modelName = $this->convertToModelName($model);
+            $specName = $this->convertToModelName($spec);
             $actionName = $this->convertToActionName($action);
 
             // Execute the action via LLCS facade
             $result = LLCS::executeModelAction(
                 LLCS::getDefaultValidator(),
                 LLCS::getDefaultGenerator(),
-                $modelName,
+                $specName,
                 $actionName,
                 $request->all()
             );
