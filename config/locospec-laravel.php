@@ -35,7 +35,7 @@ return [
         // Number of days to keep log files before deletion
         'retention_days' => 7,
 
-        // To Enable the query logs, logs will come with the query response under meta object 
-        "query_logs" => false 
+        // To Enable the query logs, logs will come with the query response under meta object
+        'query_logs' => false,
     ],
 ];
