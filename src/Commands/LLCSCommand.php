@@ -18,7 +18,7 @@ class LLCSCommand extends Command
         $this->info('     Locospec Laravel Lowcode Framework ');
         $this->info('==============================================');
 
-         if ($action === 'clear-cache') {
+        if ($action === 'clear-cache') {
             if (LCS::clearCache()) {
                 $this->info('Registry cache cleared successfully.');
             } else {
@@ -28,8 +28,8 @@ class LLCSCommand extends Command
             $status = LCS::checkCacheStatus();
             if (($status['exists'] ?? false)) {
                 $this->info('Cache file exists.');
-                $this->line("Last modified: " . date('Y-m-d H:i:s', $status['modified']));
-                $this->line("Size: " . $status['size'] . " bytes");
+                $this->line('Last modified: '.date('Y-m-d H:i:s', $status['modified']));
+                $this->line('Size: '.$status['size'].' bytes');
             } else {
                 $this->warn('Cache file does not exist.');
             }
