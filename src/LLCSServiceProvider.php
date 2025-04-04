@@ -9,9 +9,13 @@ use Locospec\Engine\Actions\ActionOrchestrator;
 use Locospec\Engine\Actions\StateMachineFactory;
 use Locospec\Engine\LCS;
 use Locospec\Engine\Registry\DatabaseDriverInterface;
+use Locospec\Engine\Registry\GeneratorInterface;
+use Locospec\Engine\Registry\ValidatorInterface;
 use Locospec\LLCS\Commands\LLCSCommand;
 use Locospec\LLCS\Database\DatabaseOperator;
+use Locospec\LLCS\Generators\DefaultGenerator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
+use Locospec\LLCS\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -54,6 +58,20 @@ class LLCSServiceProvider extends PackageServiceProvider
                 $app->make(LCS::class),
                 $app->make(StateMachineFactory::class)
             );
+        });
+
+        // Bind the validator. Users can override this via the config if desired.
+        $this->app->singleton(ValidatorInterface::class, function () {
+            $validatorClass = config('locospec-laravel.validator', new DefaultValidator);
+
+            return $validatorClass;
+        });
+
+        // Bind the generator. Users can override this via the config if desired.
+        $this->app->singleton(GeneratorInterface::class, function () {
+            $validatorClass = config('locospec-laravel.generator', new DefaultGenerator);
+
+            return $validatorClass;
         });
 
         // Register LLCS
@@ -102,10 +120,10 @@ class LLCSServiceProvider extends PackageServiceProvider
             'middleware' => $config['middleware'] ?? ['api'],
             'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
-            Route::post('{model}/{action}', [ModelActionController::class, 'handle'])
-                ->where('model', '([a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
+            Route::post('{spec}/{action}', [ModelActionController::class, 'handle'])
+                ->where('spec', '([a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
                 ->where('action', '(_[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*)')
-                ->name('model.action');
+                ->name('spec.action');
         });
     }
 
@@ -120,6 +138,7 @@ class LLCSServiceProvider extends PackageServiceProvider
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
                     'logging' => config('locospec-laravel.logging', []),
+                    'cache_path' => config('locospec-laravel.cache_path', ''),
                 ]);
                 Log::info('LCS bootstrapped successfully');
             }

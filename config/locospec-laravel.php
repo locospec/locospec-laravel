@@ -38,4 +38,5 @@ return [
         // To Enable the query logs, logs will come with the query response under meta object
         'query_logs' => false,
     ],
+    'cache_path' => base_path('storage/app/private'),
 ];
