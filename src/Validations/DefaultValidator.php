@@ -22,7 +22,7 @@ class DefaultValidator implements ValidatorInterface
         $messages = [];
         $customRules = [];
 
-        try{
+        try {
             foreach ($attributes as $field => $definition) {
                 $fieldRules = [];
                 $validations = $definition->getValidations();
@@ -41,16 +41,16 @@ class DefaultValidator implements ValidatorInterface
                                 case 'unique':
                                 case 'exists':
                                     $customRules[$field][] = [
-                                        'rule'    => $validation->type,
+                                        'rule' => $validation->type,
                                         'message' => $validation->message ?? "Validation failed for custom rule: {$validation->type}",
                                     ];
-                                    if(isset($validation->model)){
+                                    if (isset($validation->model)) {
                                         $options['modelName'] = $validation->model;
                                     }
                                     break;
-                                
+
                                 default:
-                                    # code...
+                                    // code...
                                     $fieldRules[] = $validation->type;
                                     // Determine the rule name (e.g., "min" from "min:3") for message assignment.
                                     $ruleName = explode(':', $validation->type)[0];
@@ -78,7 +78,7 @@ class DefaultValidator implements ValidatorInterface
                 $options['attributeName'] = $field;
                 foreach ($rulesData as $customRule) {
                     $customRuleName = $customRule['rule'];
-                    if (!$this->validateCustomRule($customRuleName, $value, $options)) {
+                    if (! $this->validateCustomRule($customRuleName, $value, $options)) {
                         $errors->add($field, $customRule['message']);
                     }
                 }
@@ -89,7 +89,7 @@ class DefaultValidator implements ValidatorInterface
             }
 
             return true;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -97,8 +97,8 @@ class DefaultValidator implements ValidatorInterface
     /**
      * Dispatch the custom validation to the appropriate method.
      *
-     * @param string $rule  The custom rule name (without the "custom:" prefix).
-     * @param mixed  $value The value to validate.
+     * @param  string  $rule  The custom rule name (without the "custom:" prefix).
+     * @param  mixed  $value  The value to validate.
      * @return mixed True if validation passes, false otherwise.
      */
     public function validateCustomRule(string $rule, $value, array $options)
@@ -139,13 +139,13 @@ class DefaultValidator implements ValidatorInterface
                         ],
                     ],
                 ]);
-                
+
                 $response = $options['dbOps']->execute($options['dbOperator']);
-                $isUnique = !empty($response[0]['result']);
+                $isUnique = ! empty($response[0]['result']);
 
                 return $isUnique;
 
-            // Add more cases for additional custom validations.
+                // Add more cases for additional custom validations.
             default:
                 throw new RuntimeException("Custom rule '{$rule}' is not implemented.");
         }
