@@ -69,7 +69,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         }
 
         // Add condition for non-deleted records
-        if(isset($operation['deleteColumn'])){
+        if (isset($operation['deleteColumn'])) {
             $query->whereNull($operation['deleteColumn']);
         }
 
