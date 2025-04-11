@@ -68,6 +68,11 @@ class SelectOperationHandler implements OperationHandlerInterface
             }
         }
 
+        // Add condition for non-deleted records
+        if (isset($operation['deleteColumn'])) {
+            $query->whereNull($operation['deleteColumn']);
+        }
+
         // Handle pagination
         if (isset($operation['pagination'])) {
             return $this->handlePagination($query, $operation['pagination']);

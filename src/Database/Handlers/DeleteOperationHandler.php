@@ -45,7 +45,7 @@ class DeleteOperationHandler implements OperationHandlerInterface
         $startTime = microtime(true);
 
         // Execute the delete operation
-        $numRowsAffected = $query->delete();
+        $numRowsAffected = $operation['softDelete'] ? $query->update([$operation['deleteColumn'] => now()]) : $query->delete();
 
         // Get the SQL query that would be executed
         $this->lastQuery = $query->toRawSql();
