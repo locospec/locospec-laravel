@@ -121,7 +121,7 @@ class DefaultValidator implements ValidatorInterface
                     ],
                 ];
 
-                if(isset($options['with'])){
+                if (isset($options['with'])) {
                     foreach ($options['with'] as $value) {
                         $filters['conditions'][] = [
                             'attribute' => $value,
