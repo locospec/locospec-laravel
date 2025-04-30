@@ -61,7 +61,7 @@ class DatabaseOperator implements DatabaseDriverInterface
     {
         LLCS::getLogger()->info('Running database operations', ['operationCount' => count($operations)]);
         $useTransaction = $this->needsTransaction($operations);
-
+        
         if ($useTransaction) {
             LLCS::getLogger()->info('Executing operations inside a transaction');
 

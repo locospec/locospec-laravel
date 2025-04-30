@@ -47,6 +47,10 @@ class DefaultValidator implements ValidatorInterface
                                     if (isset($validation->model)) {
                                         $options['modelName'] = $validation->model;
                                     }
+
+                                    if (isset($validation->with)) {
+                                        $options['with'] = $validation->with;
+                                    }
                                     break;
 
                                 default:
@@ -78,6 +82,7 @@ class DefaultValidator implements ValidatorInterface
                 $options['attributeName'] = $field;
                 foreach ($rulesData as $customRule) {
                     $customRuleName = $customRule['rule'];
+                    $options['input'] = $input;
                     if (! $this->validateCustomRule($customRuleName, $value, $options)) {
                         $errors->add($field, $customRule['message']);
                     }
@@ -105,19 +110,31 @@ class DefaultValidator implements ValidatorInterface
     {
         switch ($rule) {
             case 'unique':
+                $filters = [
+                    'op' => 'and',
+                    'conditions' => [
+                        [
+                            'attribute' => $options['attributeName'],
+                            'op' => 'is',
+                            'value' => $value,
+                        ],
+                    ],
+                ];
+
+                if(isset($options['with'])){
+                    foreach ($options['with'] as $value) {
+                        $filters['conditions'][] = [
+                            'attribute' => $value,
+                            'op' => 'is',
+                            'value' => $options['input'][$value],
+                        ];
+                    }
+                }
+
                 $options['dbOps']->add([
                     'type' => 'select',
                     'modelName' => $options['modelName'],
-                    'filters' => [
-                        'op' => 'and',
-                        'conditions' => [
-                            [
-                                'attribute' => $options['attributeName'],
-                                'op' => 'is',
-                                'value' => $value,
-                            ],
-                        ],
-                    ],
+                    'filters' => $filters,
                 ]);
                 $response = $options['dbOps']->execute($options['dbOperator']);
                 $isUnique = empty($response[0]['result']);
