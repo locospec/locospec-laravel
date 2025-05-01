@@ -6,6 +6,7 @@ use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Locospec\Engine\Actions\ActionOrchestrator;
+use Locospec\Engine\Actions\CustomActionOrchestrator;
 use Locospec\Engine\Actions\StateMachineFactory;
 use Locospec\Engine\LCS;
 use Locospec\Engine\Registry\DatabaseDriverInterface;
@@ -55,6 +56,14 @@ class LLCSServiceProvider extends PackageServiceProvider
         // Register ActionOrchestrator
         $this->app->singleton(ActionOrchestrator::class, function ($app) {
             return new ActionOrchestrator(
+                $app->make(LCS::class),
+                $app->make(StateMachineFactory::class)
+            );
+        });
+
+        // Register CustomActionOrchestrator
+        $this->app->singleton(CustomActionOrchestrator::class, function ($app) {
+            return new CustomActionOrchestrator(
                 $app->make(LCS::class),
                 $app->make(StateMachineFactory::class)
             );

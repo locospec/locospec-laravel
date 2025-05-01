@@ -59,6 +59,17 @@ class LLCS
         return $data->currentOutput;
     }
 
+    /**
+     * Execute a model action
+     */
+    public function executeCustomAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, array $input = []): array
+    {
+        $data = $this->app->make('Locospec\Engine\Actions\CustomActionOrchestrator')
+            ->execute($curdValidator, $generator, $specName, $input);
+
+        return $data->currentOutput;
+    }
+
     public function getDefaultValidator(): ValidatorInterface
     {
         return $this->app->make(ValidatorInterface::class);

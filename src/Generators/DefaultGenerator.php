@@ -5,6 +5,7 @@ namespace Locospec\LLCS\Generators;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Locospec\Engine\Registry\GeneratorInterface;
+use Locospec\LLCS\Facades\LLCS;
 
 class DefaultGenerator implements GeneratorInterface
 {
@@ -61,8 +62,11 @@ class DefaultGenerator implements GeneratorInterface
 
                 case 'datetime':
                     return isset($options['value']) && $options['value'] === 'now'
-                        ? Carbon::now()->toDateTimeString()
-                        : Carbon::parse($options['value'])->toDateTimeString();
+                            ? Carbon::now('UTC')->format('Y-m-d H:i:s.v').'+00'
+                            : Carbon::parse($options['value'])->format('Y-m-d H:i:s.v').'+00';
+                    // return isset($options['value']) && $options['value'] === 'now'
+                    //     ? Carbon::now()->toDateTimeString()
+                    //     : Carbon::parse($options['value'])->toDateTimeString();
 
                 case 'boolean':
                     return isset($options['default']) ? (bool) $options['default'] : false;
@@ -77,11 +81,20 @@ class DefaultGenerator implements GeneratorInterface
                     return isset($options['values']) && is_array($options['values'])
                         ? $options['values'][0]
                         : null;
+                case 'stateMachine':
+                    $result = LLCS::executeCustomAction(
+                        LLCS::getDefaultValidator(),
+                        LLCS::getDefaultGenerator(),
+                        $options['modelName'],
+                        $options
+                    );
 
+                    return $result['result'][$options['source']];
                 default:
                     throw new \InvalidArgumentException("Unsupported generator type: {$type}");
             }
         } catch (\Exception $e) {
+            dd('rajesh', $e);
             throw $e;
         }
     }
