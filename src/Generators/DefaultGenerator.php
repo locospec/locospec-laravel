@@ -62,8 +62,8 @@ class DefaultGenerator implements GeneratorInterface
 
                 case 'datetime':
                     return isset($options['value']) && $options['value'] === 'now'
-                            ? Carbon::now('UTC')->format('Y-m-d H:i:s.v') . '+00'
-                            : Carbon::parse($options['value'])->format('Y-m-d H:i:s.v') . '+00';
+                            ? Carbon::now('UTC')->format('Y-m-d H:i:s.v').'+00'
+                            : Carbon::parse($options['value'])->format('Y-m-d H:i:s.v').'+00';
                     // return isset($options['value']) && $options['value'] === 'now'
                     //     ? Carbon::now()->toDateTimeString()
                     //     : Carbon::parse($options['value'])->toDateTimeString();
