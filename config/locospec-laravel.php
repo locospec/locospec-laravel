@@ -39,7 +39,7 @@ return [
         'query_logs' => false,
 
         // To Enable/Disable the logs.
-        "enabled" => false
+        'enabled' => false,
     ],
     'cache_path' => base_path('storage/app/private'),
 ];
