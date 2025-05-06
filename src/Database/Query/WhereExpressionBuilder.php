@@ -3,6 +3,7 @@
 namespace Locospec\LLCS\Database\Query;
 
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\DB;
 
 class WhereExpressionBuilder
 {
@@ -62,8 +63,10 @@ class WhereExpressionBuilder
             'less_than' => $query->$method($attribute, '<', $value),
             'greater_than_or_equal' => $query->$method($attribute, '>=', $value),
             'less_than_or_equal' => $query->$method($attribute, '<=', $value),
-            'contains' => $query->$method($attribute, 'ILIKE', "%$value%"),
-            'not_contains' => $query->$method($attribute, 'NOT ILIKE', "%$value%"),
+            // 'contains' => $query->$method($attribute, 'ILIKE', "%$value%"),
+            // 'not_contains' => $query->$method($attribute, 'NOT ILIKE', "%$value%"),
+            'contains'     => $query->{$method}(DB::raw("LOWER({$attribute})"), 'LIKE', '%'.strtolower($value).'%'),
+            'not_contains' => $query->{$method}(DB::raw("LOWER({$attribute})"), 'NOT LIKE', '%'.strtolower($value).'%'),
             'is_any_of' => $query->{"{$method}In"}($attribute, (array) $value),
             'is_none_of' => $query->{"{$method}NotIn"}($attribute, (array) $value),
             'is_empty' => $query->{"{$method}Null"}($attribute),
