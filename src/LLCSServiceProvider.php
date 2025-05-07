@@ -85,8 +85,6 @@ class LLCSServiceProvider extends PackageServiceProvider
 
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
-            Log::info('Creating LLCS instance');
-
             $databaseConnections = config('locospec-laravel.drivers.database_connections', []);
 
             // Register database operator with LCS
@@ -138,18 +136,24 @@ class LLCSServiceProvider extends PackageServiceProvider
 
     public function boot(): void
     {
+        $loggingConfig = config('locospec-laravel.logging', []);
+        $showLog = !empty($loggingConfig) && $loggingConfig['enabled'];
         parent::boot();
 
-        Log::info('Booting LLCS');
+        if($showLog){
+            Log::info('Booting LLCS');
+        }
 
         try {
             if (! LCS::isInitialized()) {
                 LCS::bootstrap([
                     'paths' => config('locospec-laravel.paths', []),
-                    'logging' => config('locospec-laravel.logging', []),
+                    'logging' => $loggingConfig,
                     'cache_path' => config('locospec-laravel.cache_path', ''),
                 ]);
-                Log::info('LCS bootstrapped successfully');
+                if($showLog){
+                    Log::info('LCS bootstrapped successfully');
+                }
             }
         } catch (\Exception $e) {
             Log::error('Failed to bootstrap LCS', [
