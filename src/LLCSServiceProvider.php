@@ -137,10 +137,10 @@ class LLCSServiceProvider extends PackageServiceProvider
     public function boot(): void
     {
         $loggingConfig = config('locospec-laravel.logging', []);
-        $showLog = !empty($loggingConfig) && $loggingConfig['enabled'];
+        $showLog = ! empty($loggingConfig) && $loggingConfig['enabled'];
         parent::boot();
 
-        if($showLog){
+        if ($showLog) {
             Log::info('Booting LLCS');
         }
 
@@ -151,7 +151,7 @@ class LLCSServiceProvider extends PackageServiceProvider
                     'logging' => $loggingConfig,
                     'cache_path' => config('locospec-laravel.cache_path', ''),
                 ]);
-                if($showLog){
+                if ($showLog) {
                     Log::info('LCS bootstrapped successfully');
                 }
             }
