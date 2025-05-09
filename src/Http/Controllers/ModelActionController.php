@@ -15,9 +15,16 @@ class ModelActionController extends Controller
     public function handle(Request $request, string $spec, string $action)
     {
         try {
+            $input = $request->all();
+
             // Convert hyphenated names to LCS format
             $specName = $this->convertToModelName($spec);
             $actionName = $this->convertToActionName($action);
+            
+            $input['locospecPermissions'] = [
+                'isPermissionsEnabled' => config('locospec-laravel.enablePermissions', false),
+                'isUserAllowed' => $request->user()->can($specName)
+            ];
 
             // Execute the action via LLCS facade
             $result = LLCS::executeModelAction(
@@ -25,7 +32,7 @@ class ModelActionController extends Controller
                 LLCS::getDefaultGenerator(),
                 $specName,
                 $actionName,
-                $request->all()
+                $input
             );
 
             return response()->json([
@@ -36,9 +43,9 @@ class ModelActionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'error' => json_decode($e->getMessage()),
+                'error' => $this->parseErrorMessage($e->getMessage()),
                 // 'trace' => config('app.debug') ? $e->getTraceAsString() : null,
-            ], 400);
+            ], $this->getHttpStatusCode($e));
         }
     }
 
@@ -56,5 +63,48 @@ class ModelActionController extends Controller
     protected function convertToActionName(string $action): string
     {
         return Str::snake($action);
+    }
+
+    /**
+     * Parse error message to handle both string and JSON formats
+     *
+     * @param string $message
+     * @return array|string
+     */
+    private function parseErrorMessage(string $message)
+    {
+        if (empty($message)) {
+            return 'Unknown error occurred';
+        }
+
+        $decoded = json_decode($message, true);
+        
+        // If json_decode returns null and the original message wasn't null,
+        // it means the message wasn't valid JSON, so return the original message
+        if ($decoded === null && json_last_error() === JSON_ERROR_NONE) {
+            return $message;
+        }
+
+        // If json_decode failed, return the original message
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return $message;
+        }
+
+        return $decoded;
+    }
+
+    /**
+     * Get appropriate HTTP status code for the exception
+     *
+     * @param \Exception $e
+     * @return int
+     */
+    private function getHttpStatusCode(\Exception $e): int
+    {
+        return match (true) {
+            $e instanceof \Locospec\Engine\Exceptions\PermissionDeniedException => 403,
+            $e instanceof \Locospec\Engine\Exceptions\ValidationException => 422,
+            default => 400,
+        };
     }
 }
