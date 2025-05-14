@@ -42,4 +42,5 @@ return [
         'enabled' => false,
     ],
     'cache_path' => base_path('storage/app/private'),
+    'enablePermissions' => false,
 ];
