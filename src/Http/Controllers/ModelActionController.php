@@ -20,10 +20,10 @@ class ModelActionController extends Controller
             // Convert hyphenated names to LCS format
             $specName = $this->convertToModelName($spec);
             $actionName = $this->convertToActionName($action);
-            
+
             $input['locospecPermissions'] = [
                 'isPermissionsEnabled' => config('locospec-laravel.enablePermissions', false),
-                'isUserAllowed' => $request->user()->can($specName)
+                'isUserAllowed' => $request->user()->can($specName),
             ];
 
             // Execute the action via LLCS facade
@@ -68,7 +68,6 @@ class ModelActionController extends Controller
     /**
      * Parse error message to handle both string and JSON formats
      *
-     * @param string $message
      * @return array|string
      */
     private function parseErrorMessage(string $message)
@@ -78,7 +77,7 @@ class ModelActionController extends Controller
         }
 
         $decoded = json_decode($message, true);
-        
+
         // If json_decode returns null and the original message wasn't null,
         // it means the message wasn't valid JSON, so return the original message
         if ($decoded === null && json_last_error() === JSON_ERROR_NONE) {
@@ -95,9 +94,6 @@ class ModelActionController extends Controller
 
     /**
      * Get appropriate HTTP status code for the exception
-     *
-     * @param \Exception $e
-     * @return int
      */
     private function getHttpStatusCode(\Exception $e): int
     {
