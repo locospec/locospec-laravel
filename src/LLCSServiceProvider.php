@@ -16,10 +16,10 @@ use Locospec\LLCS\Commands\LLCSCommand;
 use Locospec\LLCS\Database\DatabaseOperator;
 use Locospec\LLCS\Generators\DefaultGenerator;
 use Locospec\LLCS\Http\Controllers\ModelActionController;
+use Locospec\LLCS\Http\Middleware\UploadToDisk;
 use Locospec\LLCS\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Locospec\LLCS\Http\Middleware\UploadToDisk;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
@@ -130,7 +130,7 @@ class LLCSServiceProvider extends PackageServiceProvider
             'middleware' => $config['middleware'] ?? ['api'],
             // 'middleware' => array_merge(
             //     $config['middleware'] ?? ['api'],
-            //     ['lcs.upload']         
+            //     ['lcs.upload']
             // ),
             'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
