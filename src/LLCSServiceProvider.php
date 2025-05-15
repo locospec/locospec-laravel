@@ -19,6 +19,7 @@ use Locospec\LLCS\Http\Controllers\ModelActionController;
 use Locospec\LLCS\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Locospec\LLCS\Http\Middleware\UploadToDisk;
 
 class LLCSServiceProvider extends PackageServiceProvider
 {
@@ -35,6 +36,8 @@ class LLCSServiceProvider extends PackageServiceProvider
     public function register(): void
     {
         parent::register();
+
+        $this->app['router']->aliasMiddleware('lcs.upload', UploadToDisk::class);
 
         // Register LCS first as it's a dependency
         $this->app->singleton(LCS::class, function () {
@@ -125,6 +128,10 @@ class LLCSServiceProvider extends PackageServiceProvider
         Route::group([
             'prefix' => $config['prefix'] ?? 'lcs',
             'middleware' => $config['middleware'] ?? ['api'],
+            // 'middleware' => array_merge(
+            //     $config['middleware'] ?? ['api'],
+            //     ['lcs.upload']         
+            // ),
             'as' => ($config['as'] ?? 'lcs').'.',
         ], function () {
             Route::post('{spec}/{action}', [ModelActionController::class, 'handle'])

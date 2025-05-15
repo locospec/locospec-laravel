@@ -26,7 +26,7 @@ return [
         'as' => 'lcs',
 
         // Middleware to apply to all LLCS routes
-        'middleware' => ['api'],
+        'middleware' => ['api', 'lcs.upload'],
     ],
     'logging' => [
         // Base log file name (RotatingFileHandler will add dates)
@@ -43,4 +43,5 @@ return [
     ],
     'cache_path' => base_path('storage/app/private'),
     'enablePermissions' => false,
+    'upload_disk' => env('FILESYSTEM_DISK', 'local'),
 ];
