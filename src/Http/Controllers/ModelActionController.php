@@ -24,8 +24,8 @@ class ModelActionController extends Controller
             $isPermissionsEnabled = config('locospec-laravel.enablePermissions', false);
 
             $input['locospecPermissions'] = [
-                'isPermissionsEnabled' => $isPermissionsEnabled ,
-                'isUserAllowed' => $isPermissionsEnabled === true ? $request->user()->can($specName): false,
+                'isPermissionsEnabled' => $isPermissionsEnabled,
+                'isUserAllowed' => $isPermissionsEnabled === true ? $request->user()->can($specName) : false,
             ];
 
             // Execute the action via LLCS facade
