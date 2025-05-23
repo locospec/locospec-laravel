@@ -14,6 +14,7 @@ class QueryResultFormatter
     {
         $endTime = microtime(true);
         $data = $this->formatResults($results);
+
         // dump($data);
         return [
             'result' => $data,
@@ -45,7 +46,7 @@ class QueryResultFormatter
      * Format results into consistent array structure
      */
     private function formatResults(mixed $results): array
-    {  
+    {
         // dd($results);
         if (is_array($results)) {
             return $results;
@@ -53,6 +54,7 @@ class QueryResultFormatter
 
         if (is_object($results)) {
             $data = $this->collectionDeepToArray($results);
+
             return $data;
             // return $this->collectionDeepToArray($results);
             // return json_decode(json_encode($results), true);
@@ -60,6 +62,7 @@ class QueryResultFormatter
             // dd($this->measureMemoryUsage($results));
             // dd($results, $results->toArray(), json_decode(json_encode($results), true), $this->measureMemoryUsage($results));
         }
+
         return [];
     }
 
@@ -91,26 +94,29 @@ class QueryResultFormatter
         throw new \InvalidArgumentException('Unsupported paginator type');
     }
 
-    private function formatBytes($bytes, $precision = 2) {
+    private function formatBytes($bytes, $precision = 2)
+    {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
-        return round($bytes, $precision) . ' ' . $units[$pow];
+
+        return round($bytes, $precision).' '.$units[$pow];
     }
 
-    private function measureMemoryUsage($results) {
+    private function measureMemoryUsage($results)
+    {
         $initialMemory = memory_get_usage();
-        
+
         // First encode
         $jsonString = json_encode($results);
         $afterEncode = memory_get_usage();
-        
+
         // Then decode
         $decoded = json_decode($jsonString);
         $afterDecode = memory_get_usage();
-        
+
         return [
             'initial' => $initialMemory,
             'after_encode' => $afterEncode,
@@ -119,7 +125,7 @@ class QueryResultFormatter
             'initial_memory_usage' => $this->formatBytes($initialMemory),
             'after_encode_memory_usage' => $this->formatBytes($afterEncode),
             'after_decode_memory_usage' => $this->formatBytes($afterDecode),
-            'total_memory_difference' => $this->formatBytes($afterDecode - $initialMemory), 
+            'total_memory_difference' => $this->formatBytes($afterDecode - $initialMemory),
             'json_string_size' => $this->formatBytes(strlen($jsonString)),
         ];
     }
@@ -139,7 +145,8 @@ class QueryResultFormatter
         return $data;
     }
 
-    private function deepToArray($data) {
+    private function deepToArray($data)
+    {
         if (is_array($data)) {
             return array_map('deepToArray', $data); // Recursively map each element
         }
