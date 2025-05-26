@@ -1,10 +1,10 @@
 <?php
 
-namespace Locospec\LLCS;
+namespace LCSLaravel;
 
-use Locospec\Engine\LCS;
-use Locospec\Engine\Registry\GeneratorInterface;
-use Locospec\Engine\Registry\ValidatorInterface;
+use LCSEngine\LCS;
+use LCSEngine\Registry\GeneratorInterface;
+use LCSEngine\Registry\ValidatorInterface;
 
 class LLCS
 {
@@ -53,7 +53,7 @@ class LLCS
      */
     public function executeModelAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, string $actionName, array $input = []): array
     {
-        $data = $this->app->make('Locospec\Engine\Actions\ActionOrchestrator')
+        $data = $this->app->make('LCSEngine\Actions\ActionOrchestrator')
             ->execute($curdValidator, $generator, $specName, $actionName, $input);
 
         return $data->currentOutput;
@@ -64,7 +64,7 @@ class LLCS
      */
     public function executeCustomAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, array $input = []): array
     {
-        $data = $this->app->make('Locospec\Engine\Actions\CustomActionOrchestrator')
+        $data = $this->app->make('LCSEngine\Actions\CustomActionOrchestrator')
             ->execute($curdValidator, $generator, $specName, $input);
 
         return $data->currentOutput;

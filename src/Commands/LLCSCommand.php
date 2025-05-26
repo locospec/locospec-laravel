@@ -1,9 +1,9 @@
 <?php
 
-namespace Locospec\LLCS\Commands;
+namespace LCSLaravel\Commands;
 
 use Illuminate\Console\Command;
-use Locospec\Engine\LCS;
+use LCSEngine\LCS;
 
 class LLCSCommand extends Command
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS\Database\Query;
+namespace LCSLaravel\Database\Query;
 
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
