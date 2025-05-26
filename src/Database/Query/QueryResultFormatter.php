@@ -47,7 +47,6 @@ class QueryResultFormatter
      */
     private function formatResults(mixed $results): array
     {
-        // dd($results);
         if (is_array($results)) {
             return $results;
         }
@@ -102,7 +101,7 @@ class QueryResultFormatter
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, $precision).' '.$units[$pow];
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     private function measureMemoryUsage($results)
