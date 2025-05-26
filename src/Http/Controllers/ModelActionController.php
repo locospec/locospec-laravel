@@ -100,8 +100,8 @@ class ModelActionController extends Controller
     private function getHttpStatusCode(\Exception $e): int
     {
         return match (true) {
-            $e instanceof \Locospec\Engine\Exceptions\PermissionDeniedException => 403,
-            $e instanceof \Locospec\Engine\Exceptions\ValidationException => 422,
+            $e instanceof \LCSEngine\Exceptions\PermissionDeniedException => 403,
+            $e instanceof \LCSEngine\Exceptions\ValidationException => 422,
             default => 400,
         };
     }

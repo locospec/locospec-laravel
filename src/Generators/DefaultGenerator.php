@@ -4,7 +4,7 @@ namespace Locospec\LLCS\Generators;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Locospec\Engine\Registry\GeneratorInterface;
+use LCSEngine\Registry\GeneratorInterface;
 use Locospec\LLCS\Facades\LLCS;
 
 class DefaultGenerator implements GeneratorInterface

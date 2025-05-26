@@ -3,7 +3,7 @@
 namespace Locospec\LLCS\Validations;
 
 use Illuminate\Support\Facades\Validator;
-use Locospec\Engine\Registry\ValidatorInterface;
+use LCSEngine\Registry\ValidatorInterface;
 
 class DefaultValidator implements ValidatorInterface
 {

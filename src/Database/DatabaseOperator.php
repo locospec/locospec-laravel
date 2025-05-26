@@ -3,7 +3,7 @@
 namespace Locospec\LLCS\Database;
 
 use Illuminate\Support\Facades\DB;
-use Locospec\Engine\Registry\DatabaseDriverInterface;
+use LCSEngine\Registry\DatabaseDriverInterface;
 use Locospec\LLCS\Database\Handlers\DeleteOperationHandler;
 use Locospec\LLCS\Database\Handlers\InsertOperationHandler;
 use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
