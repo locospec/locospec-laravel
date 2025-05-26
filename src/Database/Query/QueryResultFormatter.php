@@ -47,7 +47,6 @@ class QueryResultFormatter
      */
     private function formatResults(mixed $results): array
     {
-        // dd($results);
         if (is_array($results)) {
             return $results;
         }
