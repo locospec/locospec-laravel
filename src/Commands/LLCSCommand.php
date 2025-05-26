@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS\Commands;
+namespace LCSLaravel\Commands;
 
 use Illuminate\Console\Command;
 use LCSEngine\LCS;

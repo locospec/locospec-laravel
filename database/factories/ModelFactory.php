@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS\Database\Factories;
+namespace LCSLaravel\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

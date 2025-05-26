@@ -1,11 +1,11 @@
 <?php
 
-namespace Locospec\LLCS\Facades;
+namespace LCSLaravel\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \Locospec\LLCS\LLCS
+ * @see \LCSLaravel\LLCS
  */
 class LLCS extends Facade
 {

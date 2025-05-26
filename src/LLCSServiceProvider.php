@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS;
+namespace LCSLaravel;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -12,11 +12,11 @@ use LCSEngine\LCS;
 use LCSEngine\Registry\DatabaseDriverInterface;
 use LCSEngine\Registry\GeneratorInterface;
 use LCSEngine\Registry\ValidatorInterface;
-use Locospec\LLCS\Commands\LLCSCommand;
-use Locospec\LLCS\Database\DatabaseOperator;
-use Locospec\LLCS\Generators\DefaultGenerator;
-use Locospec\LLCS\Http\Controllers\ModelActionController;
-use Locospec\LLCS\Validations\DefaultValidator;
+use LCSLaravel\Commands\LLCSCommand;
+use LCSLaravel\Database\DatabaseOperator;
+use LCSLaravel\Generators\DefaultGenerator;
+use LCSLaravel\Http\Controllers\ModelActionController;
+use LCSLaravel\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

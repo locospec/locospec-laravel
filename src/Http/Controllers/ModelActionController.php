@@ -1,11 +1,11 @@
 <?php
 
-namespace Locospec\LLCS\Http\Controllers;
+namespace LCSLaravel\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Locospec\LLCS\Facades\LLCS;
+use LCSLaravel\Facades\LLCS;
 
 class ModelActionController extends Controller
 {

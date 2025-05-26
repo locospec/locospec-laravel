@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS;
+namespace LCSLaravel;
 
 use LCSEngine\LCS;
 use LCSEngine\Registry\GeneratorInterface;

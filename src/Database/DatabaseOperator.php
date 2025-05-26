@@ -1,17 +1,17 @@
 <?php
 
-namespace Locospec\LLCS\Database;
+namespace LCSLaravel\Database;
 
 use Illuminate\Support\Facades\DB;
 use LCSEngine\Registry\DatabaseDriverInterface;
-use Locospec\LLCS\Database\Handlers\DeleteOperationHandler;
-use Locospec\LLCS\Database\Handlers\InsertOperationHandler;
-use Locospec\LLCS\Database\Handlers\SelectOperationHandler;
-use Locospec\LLCS\Database\Handlers\UpdateOperationHandler;
-use Locospec\LLCS\Database\Query\JsonPathHandler;
-use Locospec\LLCS\Database\Query\QueryResultFormatter;
-use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
-use Locospec\LLCS\Facades\LLCS;
+use LCSLaravel\Database\Handlers\DeleteOperationHandler;
+use LCSLaravel\Database\Handlers\InsertOperationHandler;
+use LCSLaravel\Database\Handlers\SelectOperationHandler;
+use LCSLaravel\Database\Handlers\UpdateOperationHandler;
+use LCSLaravel\Database\Query\JsonPathHandler;
+use LCSLaravel\Database\Query\QueryResultFormatter;
+use LCSLaravel\Database\Query\WhereExpressionBuilder;
+use LCSLaravel\Facades\LLCS;
 
 class DatabaseOperator implements DatabaseDriverInterface
 {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Locospec\LLCS\Tests;
+namespace LCSLaravel\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Locospec\LLCS\LLCSServiceProvider;
+use LCSLaravel\LLCSServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra

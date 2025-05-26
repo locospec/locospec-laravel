@@ -1,10 +1,10 @@
 <?php
 
-namespace Locospec\LLCS\Database\Handlers;
+namespace LCSLaravel\Database\Handlers;
 
 use Illuminate\Support\Facades\DB;
-use Locospec\LLCS\Database\Contracts\OperationHandlerInterface;
-use Locospec\LLCS\Database\Query\QueryResultFormatter;
+use LCSLaravel\Database\Contracts\OperationHandlerInterface;
+use LCSLaravel\Database\Query\QueryResultFormatter;
 
 class InsertOperationHandler implements OperationHandlerInterface
 {

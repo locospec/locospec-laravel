@@ -1,6 +1,6 @@
 <?php
 
-namespace Locospec\LLCS\Validations;
+namespace LCSLaravel\Validations;
 
 use Illuminate\Support\Facades\Validator;
 use LCSEngine\Registry\ValidatorInterface;
