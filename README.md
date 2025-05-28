@@ -52,7 +52,7 @@ php artisan vendor:publish --tag="locospec-laravel-views"
 ## Usage
 
 ```php
-$lLCS = new LCSLaravel();
+$lLCS = new Locospec\LLCS();
 echo $lLCS->echoPhrase('Hello, Locospec!');
 ```
 
@@ -76,8 +76,8 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
--   [Rajiv Seelam](https://github.com/rjvim)
--   [All Contributors](../../contributors)
+- [Rajiv Seelam](https://github.com/rjvim)
+- [All Contributors](../../contributors)
 
 ## License
 

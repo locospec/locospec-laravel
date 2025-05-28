@@ -1,11 +1,11 @@
 <?php
 
-namespace LCSLaravel\Http\Controllers;
+namespace Locospec\LLCS\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use LCSLaravel\Facades\LLCS;
+use Locospec\LLCS\Facades\LLCS;
 
 class ModelActionController extends Controller
 {
@@ -100,8 +100,8 @@ class ModelActionController extends Controller
     private function getHttpStatusCode(\Exception $e): int
     {
         return match (true) {
-            $e instanceof \LCSEngine\Exceptions\PermissionDeniedException => 403,
-            $e instanceof \LCSEngine\Exceptions\ValidationException => 422,
+            $e instanceof \Locospec\Engine\Exceptions\PermissionDeniedException => 403,
+            $e instanceof \Locospec\Engine\Exceptions\ValidationException => 422,
             default => 400,
         };
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace LCSLaravel\Database\Contracts;
+namespace Locospec\LLCS\Database\Contracts;
 
 interface OperationHandlerInterface
 {

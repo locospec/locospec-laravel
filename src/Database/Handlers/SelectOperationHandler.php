@@ -1,12 +1,12 @@
 <?php
 
-namespace LCSLaravel\Database\Handlers;
+namespace Locospec\LLCS\Database\Handlers;
 
 use Illuminate\Support\Facades\DB;
-use LCSLaravel\Database\Contracts\OperationHandlerInterface;
-use LCSLaravel\Database\Query\JsonPathHandler;
-use LCSLaravel\Database\Query\QueryResultFormatter;
-use LCSLaravel\Database\Query\WhereExpressionBuilder;
+use Locospec\LLCS\Database\Contracts\OperationHandlerInterface;
+use Locospec\LLCS\Database\Query\JsonPathHandler;
+use Locospec\LLCS\Database\Query\QueryResultFormatter;
+use Locospec\LLCS\Database\Query\WhereExpressionBuilder;
 
 class SelectOperationHandler implements OperationHandlerInterface
 {
