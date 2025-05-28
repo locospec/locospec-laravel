@@ -1,9 +1,9 @@
 <?php
 
-namespace Locospec\LLCS\Validations;
+namespace LCSLaravel\Validations;
 
 use Illuminate\Support\Facades\Validator;
-use Locospec\Engine\Registry\ValidatorInterface;
+use LCSEngine\Registry\ValidatorInterface;
 
 class DefaultValidator implements ValidatorInterface
 {

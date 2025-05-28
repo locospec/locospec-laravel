@@ -1,11 +1,11 @@
 <?php
 
-namespace Locospec\LLCS\Generators;
+namespace LCSLaravel\Generators;
 
 use Carbon\Carbon;
 use Illuminate\Support\Str;
-use Locospec\Engine\Registry\GeneratorInterface;
-use Locospec\LLCS\Facades\LLCS;
+use LCSEngine\Registry\GeneratorInterface;
+use LCSLaravel\Facades\LLCS;
 
 class DefaultGenerator implements GeneratorInterface
 {

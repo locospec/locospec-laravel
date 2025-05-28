@@ -1,22 +1,22 @@
 <?php
 
-namespace Locospec\LLCS;
+namespace LCSLaravel;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
-use Locospec\Engine\Actions\ActionOrchestrator;
-use Locospec\Engine\Actions\CustomActionOrchestrator;
-use Locospec\Engine\Actions\StateMachineFactory;
-use Locospec\Engine\LCS;
-use Locospec\Engine\Registry\DatabaseDriverInterface;
-use Locospec\Engine\Registry\GeneratorInterface;
-use Locospec\Engine\Registry\ValidatorInterface;
-use Locospec\LLCS\Commands\LLCSCommand;
-use Locospec\LLCS\Database\DatabaseOperator;
-use Locospec\LLCS\Generators\DefaultGenerator;
-use Locospec\LLCS\Http\Controllers\ModelActionController;
-use Locospec\LLCS\Validations\DefaultValidator;
+use LCSEngine\Actions\ActionOrchestrator;
+use LCSEngine\Actions\CustomActionOrchestrator;
+use LCSEngine\Actions\StateMachineFactory;
+use LCSEngine\LCS;
+use LCSEngine\Registry\DatabaseDriverInterface;
+use LCSEngine\Registry\GeneratorInterface;
+use LCSEngine\Registry\ValidatorInterface;
+use LCSLaravel\Commands\LLCSCommand;
+use LCSLaravel\Database\DatabaseOperator;
+use LCSLaravel\Generators\DefaultGenerator;
+use LCSLaravel\Http\Controllers\ModelActionController;
+use LCSLaravel\Validations\DefaultValidator;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 

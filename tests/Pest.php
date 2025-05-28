@@ -1,5 +1,5 @@
 <?php
 
-use Locospec\LLCS\Tests\TestCase;
+use LCSLaravel\Tests\TestCase;
 
 uses(TestCase::class)->in(__DIR__);
