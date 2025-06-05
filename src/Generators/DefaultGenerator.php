@@ -23,7 +23,7 @@ class DefaultGenerator implements GeneratorInterface
                 case 'uuid':
                     return Str::uuid()->toString();
 
-                case 'uniqueSlugGenerator':
+                case 'unique_slug':
                     if (! isset($options['sourceValue'])) {
                         return null;
                     }
@@ -64,9 +64,6 @@ class DefaultGenerator implements GeneratorInterface
                     return isset($options['value']) && $options['value'] === 'now'
                             ? Carbon::now('UTC')->format('Y-m-d H:i:s.v').'+00'
                             : Carbon::parse($options['value'])->format('Y-m-d H:i:s.v').'+00';
-                    // return isset($options['value']) && $options['value'] === 'now'
-                    //     ? Carbon::now()->toDateTimeString()
-                    //     : Carbon::parse($options['value'])->toDateTimeString();
 
                 case 'boolean':
                     return isset($options['default']) ? (bool) $options['default'] : false;
@@ -81,7 +78,7 @@ class DefaultGenerator implements GeneratorInterface
                     return isset($options['values']) && is_array($options['values'])
                         ? $options['values'][0]
                         : null;
-                case 'stateMachine':
+                case 'state_machine':
                     $result = LLCS::executeCustomAction(
                         LLCS::getDefaultValidator(),
                         LLCS::getDefaultGenerator(),
@@ -94,7 +91,6 @@ class DefaultGenerator implements GeneratorInterface
                     throw new \InvalidArgumentException("Unsupported generator type: {$type}");
             }
         } catch (\Exception $e) {
-            dd('rajesh', $e);
             throw $e;
         }
     }
