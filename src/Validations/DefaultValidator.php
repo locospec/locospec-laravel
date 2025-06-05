@@ -25,7 +25,7 @@ class DefaultValidator implements ValidatorInterface
         try {
             foreach ($attributes as $field => $definition) {
                 $fieldRules = [];
-                $validations = $definition->getValidations();
+                $validations = $definition->getValidators()->map(fn ($validator) => $validator->toArray())->all();
                 if (isset($validations) && is_array($validations)) {
                     foreach ($validations as $validation) {
                         // If the validation has an 'operations' key, only apply if the current operation is allowed.
