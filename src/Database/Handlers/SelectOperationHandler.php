@@ -43,8 +43,8 @@ class SelectOperationHandler implements OperationHandlerInterface
         if (isset($operation['attributes'])) {
             $attributes = array_map(function ($attr) {
                 return str_contains($attr, '->')
-                ? $this->jsonPathHandler->handle($attr)
-                : $attr;
+                    ? $this->jsonPathHandler->handle($attr)
+                    : $attr;
             }, $operation['attributes']);
             $query->select($attributes);
         }
@@ -73,6 +73,16 @@ class SelectOperationHandler implements OperationHandlerInterface
             $query->whereNull($operation['deleteColumn']);
         }
 
+        // Handle joins
+        if (isset($operation['joins'])) {
+            foreach ($operation['joins'] as $join) {
+                $this->applyJoin($query, $join);
+            }
+            // dd($attributes);
+            // dd($query->toRawSql()); // For debugging purposes, remove in production
+        }
+
+
         // Handle pagination
         if (isset($operation['pagination'])) {
             return $this->handlePagination($query, $operation['pagination']);
@@ -80,10 +90,67 @@ class SelectOperationHandler implements OperationHandlerInterface
 
         // Execute query
         $startTime = microtime(true);
-        $results = $query->select()->get();
+        $results = $query->get();
         $this->lastQuery = $query->toRawSql();
+        // if (isset($operation['joins'])) {
+        //     dd($results);
+        // }
 
         return $this->formatter->format($results, $this->lastQuery, $startTime);
+    }
+
+    /**
+     * Apply join to the query based on join configuration
+     */
+    private function applyJoin($query, array $join): void
+    {
+        if (!isset($join['type']) || !isset($join['table'])) {
+            throw new \InvalidArgumentException('Join requires type and table properties');
+        }
+
+        $table = $join['table'];
+
+        // Handle alias if provided
+        if (isset($join['alias'])) {
+            $table = $table . ' as ' . $join['alias'];
+        }
+
+        // Apply the appropriate join type
+        switch ($join['type']) {
+            case 'inner':
+            case 'left':
+            case 'right':
+                // These join types require an 'on' condition
+                if (!isset($join['on'])) {
+                    throw new \InvalidArgumentException($join['type'] . ' join requires an on condition');
+                }
+
+                $onCondition = $join['on'];
+
+                // Validate on condition has exactly 3 elements
+                if (count($onCondition) !== 3) {
+                    throw new \InvalidArgumentException('Join on condition must have exactly 3 elements: [left_column, operator, right_column]');
+                }
+
+                [$leftColumn, $operator, $rightColumn] = $onCondition;
+
+                if ($join['type'] === 'inner') {
+                    $query->join($table, $leftColumn, $operator, $rightColumn);
+                } elseif ($join['type'] === 'left') {
+                    $query->leftJoin($table, $leftColumn, $operator, $rightColumn);
+                } elseif ($join['type'] === 'right') {
+                    $query->rightJoin($table, $leftColumn, $operator, $rightColumn);
+                }
+                break;
+
+            case 'cross':
+                // Cross join doesn't use on conditions
+                $query->crossJoin($table);
+                break;
+
+            default:
+                throw new \InvalidArgumentException('Invalid join type: ' . $join['type']);
+        }
     }
 
     /**
