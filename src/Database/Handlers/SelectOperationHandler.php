@@ -82,7 +82,6 @@ class SelectOperationHandler implements OperationHandlerInterface
             // dd($query->toRawSql()); // For debugging purposes, remove in production
         }
 
-
         // Handle pagination
         if (isset($operation['pagination'])) {
             return $this->handlePagination($query, $operation['pagination']);
@@ -104,7 +103,7 @@ class SelectOperationHandler implements OperationHandlerInterface
      */
     private function applyJoin($query, array $join): void
     {
-        if (!isset($join['type']) || !isset($join['table'])) {
+        if (! isset($join['type']) || ! isset($join['table'])) {
             throw new \InvalidArgumentException('Join requires type and table properties');
         }
 
@@ -112,7 +111,7 @@ class SelectOperationHandler implements OperationHandlerInterface
 
         // Handle alias if provided
         if (isset($join['alias'])) {
-            $table = $table . ' as ' . $join['alias'];
+            $table = $table.' as '.$join['alias'];
         }
 
         // Apply the appropriate join type
@@ -121,8 +120,8 @@ class SelectOperationHandler implements OperationHandlerInterface
             case 'left':
             case 'right':
                 // These join types require an 'on' condition
-                if (!isset($join['on'])) {
-                    throw new \InvalidArgumentException($join['type'] . ' join requires an on condition');
+                if (! isset($join['on'])) {
+                    throw new \InvalidArgumentException($join['type'].' join requires an on condition');
                 }
 
                 $onCondition = $join['on'];
@@ -149,7 +148,7 @@ class SelectOperationHandler implements OperationHandlerInterface
                 break;
 
             default:
-                throw new \InvalidArgumentException('Invalid join type: ' . $join['type']);
+                throw new \InvalidArgumentException('Invalid join type: '.$join['type']);
         }
     }
 
