@@ -2,9 +2,9 @@
 
 namespace LCSLaravel\Database\Query;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Query\Builder;
 
 class QueryResultFormatter
 {
@@ -16,11 +16,20 @@ class QueryResultFormatter
         $endTime = microtime(true);
         $data = $this->formatResults($results);
 
+        $cleanedSql = preg_replace_callback('/\?+(, \?+)*\)?/', function ($matches) {
+            // Count total ? in the match
+            $count = substr_count($matches[0], '?');
+            // Return single ? with count if > 1, else just ?
+            return $count > 1 ? "?$count" : '?';
+        }, $query->toSql());
+
         // dump($data);
         return [
             'result' => $data,
+            'cleaned_sql' => $cleanedSql,
             'raw_sql' => $query->toRawSql(),
             'sql' => $query->toSql(),
+            'joins' => $query->joins,
             'timing' => [
                 'started_at' => $startTime,
                 'ended_at' => $endTime,
@@ -103,7 +112,7 @@ class QueryResultFormatter
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, $precision).' '.$units[$pow];
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     private function measureMemoryUsage($results)

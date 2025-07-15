@@ -2,11 +2,11 @@
 
 namespace LCSLaravel\Database\Handlers;
 
-use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\QueryResultFormatter;
 use LCSLaravel\Database\Query\WhereExpressionBuilder;
+use Illuminate\Database\Query\Builder;
 
 class UpdateOperationHandler implements OperationHandlerInterface
 {
