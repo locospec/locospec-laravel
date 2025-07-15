@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\QueryResultFormatter;
 use LCSLaravel\Database\Query\WhereExpressionBuilder;
+use Illuminate\Database\Query\Builder;
 
 class DeleteOperationHandler implements OperationHandlerInterface
 {
@@ -13,7 +14,7 @@ class DeleteOperationHandler implements OperationHandlerInterface
 
     private QueryResultFormatter $formatter;
 
-    private ?string $lastQuery = null;
+    private ?Builder $lastQuery = null;
 
     public function __construct(
         WhereExpressionBuilder $whereBuilder,
@@ -48,7 +49,7 @@ class DeleteOperationHandler implements OperationHandlerInterface
         $numRowsAffected = $operation['softDelete'] ? $query->update([$operation['deleteColumn'] => now()]) : $query->delete();
 
         // Get the SQL query that would be executed
-        $this->lastQuery = $query->toRawSql();
+        $this->lastQuery = $query;
 
         // Format and return the results
         return $this->formatter->format(
@@ -58,7 +59,7 @@ class DeleteOperationHandler implements OperationHandlerInterface
         );
     }
 
-    public function getQuery(): ?string
+    public function getQuery(): ?Builder
     {
         return $this->lastQuery;
     }

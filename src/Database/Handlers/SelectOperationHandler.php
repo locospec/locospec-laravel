@@ -7,6 +7,7 @@ use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\JsonPathHandler;
 use LCSLaravel\Database\Query\QueryResultFormatter;
 use LCSLaravel\Database\Query\WhereExpressionBuilder;
+use Illuminate\Database\Query\Builder;
 
 class SelectOperationHandler implements OperationHandlerInterface
 {
@@ -16,7 +17,7 @@ class SelectOperationHandler implements OperationHandlerInterface
 
     private QueryResultFormatter $formatter;
 
-    private ?string $lastQuery = null;
+    private ?Builder $lastQuery = null;
 
     public function __construct(
         WhereExpressionBuilder $whereBuilder,
@@ -90,7 +91,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Execute query
         $startTime = microtime(true);
         $results = $query->get();
-        $this->lastQuery = $query->toRawSql();
+        $this->lastQuery = $query;
         // if (isset($operation['joins'])) {
         //     dd($results);
         // }
@@ -111,7 +112,7 @@ class SelectOperationHandler implements OperationHandlerInterface
 
         // Handle alias if provided
         if (isset($join['alias'])) {
-            $table = $table.' as '.$join['alias'];
+            $table = $table . ' as ' . $join['alias'];
         }
 
         // Apply the appropriate join type
@@ -121,7 +122,7 @@ class SelectOperationHandler implements OperationHandlerInterface
             case 'right':
                 // These join types require an 'on' condition
                 if (! isset($join['on'])) {
-                    throw new \InvalidArgumentException($join['type'].' join requires an on condition');
+                    throw new \InvalidArgumentException($join['type'] . ' join requires an on condition');
                 }
 
                 $onCondition = $join['on'];
@@ -148,7 +149,7 @@ class SelectOperationHandler implements OperationHandlerInterface
                 break;
 
             default:
-                throw new \InvalidArgumentException('Invalid join type: '.$join['type']);
+                throw new \InvalidArgumentException('Invalid join type: ' . $join['type']);
         }
     }
 
@@ -175,12 +176,12 @@ class SelectOperationHandler implements OperationHandlerInterface
             );
         }
 
-        $this->lastQuery = $query->toRawSql();
+        $this->lastQuery = $query;
 
         return $this->formatter->formatPagination($results, $this->lastQuery, $startTime);
     }
 
-    public function getQuery(): ?string
+    public function getQuery(): ?Builder
     {
         return $this->lastQuery;
     }

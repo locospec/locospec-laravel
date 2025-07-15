@@ -4,13 +4,14 @@ namespace LCSLaravel\Database\Query;
 
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Query\Builder;
 
 class QueryResultFormatter
 {
     /**
      * Format query results with metadata
      */
-    public function format(mixed $results, string $sql, float $startTime): array
+    public function format(mixed $results, Builder $query, float $startTime): array
     {
         $endTime = microtime(true);
         $data = $this->formatResults($results);
@@ -18,7 +19,8 @@ class QueryResultFormatter
         // dump($data);
         return [
             'result' => $data,
-            'sql' => $sql,
+            'raw_sql' => $query->toRawSql(),
+            'sql' => $query->toSql(),
             'timing' => [
                 'started_at' => $startTime,
                 'ended_at' => $endTime,
@@ -30,13 +32,13 @@ class QueryResultFormatter
     /**
      * Format pagination results
      */
-    public function formatPagination(mixed $results, string $sql, float $startTime): array
+    public function formatPagination(mixed $results, Builder $query, float $startTime): array
     {
         $results->through(function ($item) {
             return (array) $item;
         });
 
-        $formatted = $this->format($results->items(), $sql, $startTime);
+        $formatted = $this->format($results->items(), $query, $startTime);
         $formatted['pagination'] = $this->getPaginationMetadata($results);
 
         return $formatted;
@@ -101,7 +103,7 @@ class QueryResultFormatter
         $pow = min($pow, count($units) - 1);
         $bytes /= pow(1024, $pow);
 
-        return round($bytes, $precision).' '.$units[$pow];
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     private function measureMemoryUsage($results)

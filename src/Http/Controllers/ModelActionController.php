@@ -43,6 +43,8 @@ class ModelActionController extends Controller
                 'meta' => $result['meta'] ?? [],
             ]);
         } catch (\Exception $e) {
+            dd($e);
+
             return response()->json([
                 'success' => false,
                 'error' => $this->parseErrorMessage($e->getMessage()),

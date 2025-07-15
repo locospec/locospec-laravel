@@ -2,6 +2,8 @@
 
 namespace LCSLaravel\Database\Contracts;
 
+use Illuminate\Database\Query\Builder;
+
 interface OperationHandlerInterface
 {
     /**
@@ -17,5 +19,5 @@ interface OperationHandlerInterface
      *
      * @return string|null The SQL query or null if not applicable
      */
-    public function getQuery(): ?string;
+    public function getQuery(): ?Builder;
 }
