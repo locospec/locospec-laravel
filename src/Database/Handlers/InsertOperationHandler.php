@@ -2,10 +2,10 @@
 
 namespace LCSLaravel\Database\Handlers;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\QueryResultFormatter;
-use Illuminate\Database\Query\Builder;
 
 class InsertOperationHandler implements OperationHandlerInterface
 {

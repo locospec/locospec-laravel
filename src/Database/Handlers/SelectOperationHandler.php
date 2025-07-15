@@ -2,12 +2,12 @@
 
 namespace LCSLaravel\Database\Handlers;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\JsonPathHandler;
 use LCSLaravel\Database\Query\QueryResultFormatter;
 use LCSLaravel\Database\Query\WhereExpressionBuilder;
-use Illuminate\Database\Query\Builder;
 
 class SelectOperationHandler implements OperationHandlerInterface
 {
@@ -112,7 +112,7 @@ class SelectOperationHandler implements OperationHandlerInterface
 
         // Handle alias if provided
         if (isset($join['alias'])) {
-            $table = $table . ' as ' . $join['alias'];
+            $table = $table.' as '.$join['alias'];
         }
 
         // Apply the appropriate join type
@@ -122,7 +122,7 @@ class SelectOperationHandler implements OperationHandlerInterface
             case 'right':
                 // These join types require an 'on' condition
                 if (! isset($join['on'])) {
-                    throw new \InvalidArgumentException($join['type'] . ' join requires an on condition');
+                    throw new \InvalidArgumentException($join['type'].' join requires an on condition');
                 }
 
                 $onCondition = $join['on'];
@@ -149,7 +149,7 @@ class SelectOperationHandler implements OperationHandlerInterface
                 break;
 
             default:
-                throw new \InvalidArgumentException('Invalid join type: ' . $join['type']);
+                throw new \InvalidArgumentException('Invalid join type: '.$join['type']);
         }
     }
 
