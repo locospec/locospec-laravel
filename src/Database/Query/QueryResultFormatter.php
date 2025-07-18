@@ -2,6 +2,7 @@
 
 namespace LCSLaravel\Database\Query;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -10,15 +11,26 @@ class QueryResultFormatter
     /**
      * Format query results with metadata
      */
-    public function format(mixed $results, string $sql, float $startTime): array
+    public function format(mixed $results, Builder $query, float $startTime): array
     {
         $endTime = microtime(true);
         $data = $this->formatResults($results);
 
+        $cleanedSql = preg_replace_callback('/\?+(, \?+)*\)?/', function ($matches) {
+            // Count total ? in the match
+            $count = substr_count($matches[0], '?');
+
+            // Return single ? with count if > 1, else just ?
+            return $count > 1 ? "?$count" : '?';
+        }, $query->toSql());
+
         // dump($data);
         return [
             'result' => $data,
-            'sql' => $sql,
+            'cleaned_sql' => $cleanedSql,
+            'raw_sql' => $query->toRawSql(),
+            'sql' => $query->toSql(),
+            'joins' => $query->joins,
             'timing' => [
                 'started_at' => $startTime,
                 'ended_at' => $endTime,
@@ -30,13 +42,13 @@ class QueryResultFormatter
     /**
      * Format pagination results
      */
-    public function formatPagination(mixed $results, string $sql, float $startTime): array
+    public function formatPagination(mixed $results, Builder $query, float $startTime): array
     {
         $results->through(function ($item) {
             return (array) $item;
         });
 
-        $formatted = $this->format($results->items(), $sql, $startTime);
+        $formatted = $this->format($results->items(), $query, $startTime);
         $formatted['pagination'] = $this->getPaginationMetadata($results);
 
         return $formatted;

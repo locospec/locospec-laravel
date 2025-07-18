@@ -2,6 +2,7 @@
 
 namespace LCSLaravel\Database\Handlers;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\JsonPathHandler;
@@ -16,7 +17,7 @@ class SelectOperationHandler implements OperationHandlerInterface
 
     private QueryResultFormatter $formatter;
 
-    private ?string $lastQuery = null;
+    private ?Builder $lastQuery = null;
 
     public function __construct(
         WhereExpressionBuilder $whereBuilder,
@@ -42,9 +43,18 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Handle attributes (select columns)
         if (isset($operation['attributes'])) {
             $attributes = array_map(function ($attr) {
-                return str_contains($attr, '->')
-                    ? $this->jsonPathHandler->handle($attr)
-                    : $attr;
+                // Handle JSON paths
+                if (str_contains($attr, '->')) {
+                    return $this->jsonPathHandler->handle($attr);
+                }
+
+                // Check if this is an aggregate function (COUNT, SUM, AVG, MIN, MAX)
+                // Pattern matches: FUNCTION(...) AS alias or FUNCTION(*)
+                if (preg_match('/^(COUNT|SUM|AVG|MIN|MAX)\s*\(/i', $attr)) {
+                    return DB::raw($attr);
+                }
+
+                return $attr;
             }, $operation['attributes']);
             $query->select($attributes);
         }
@@ -82,6 +92,17 @@ class SelectOperationHandler implements OperationHandlerInterface
             // dd($query->toRawSql()); // For debugging purposes, remove in production
         }
 
+        // Handle groupBy
+        if (isset($operation['groupBy']) && is_array($operation['groupBy'])) {
+            // Laravel's groupBy can accept multiple columns as separate arguments or as an array
+            // Since we're getting an array, we can pass it directly
+            $query->groupBy(...$operation['groupBy']);
+        }
+
+        // if (isset($operation['groupBy'])) {
+        //     dd($query->toRawSql()); // For debugging purposes, remove in production
+        // }
+
         // Handle pagination
         if (isset($operation['pagination'])) {
             return $this->handlePagination($query, $operation['pagination']);
@@ -90,10 +111,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Execute query
         $startTime = microtime(true);
         $results = $query->get();
-        $this->lastQuery = $query->toRawSql();
-        // if (isset($operation['joins'])) {
-        //     dd($results);
-        // }
+        $this->lastQuery = $query;
 
         return $this->formatter->format($results, $this->lastQuery, $startTime);
     }
@@ -162,7 +180,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         if ($pagination['type'] === 'cursor') {
             $results = $query->cursorPaginate(
                 $pagination['per_page'],
-                ['*'],
+                '*',
                 'cursor',
                 $pagination['cursor'] ?? null
             );
@@ -175,12 +193,12 @@ class SelectOperationHandler implements OperationHandlerInterface
             );
         }
 
-        $this->lastQuery = $query->toRawSql();
+        $this->lastQuery = $query;
 
         return $this->formatter->formatPagination($results, $this->lastQuery, $startTime);
     }
 
-    public function getQuery(): ?string
+    public function getQuery(): ?Builder
     {
         return $this->lastQuery;
     }

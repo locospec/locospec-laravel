@@ -2,6 +2,7 @@
 
 namespace LCSLaravel\Database\Handlers;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use LCSLaravel\Database\Contracts\OperationHandlerInterface;
 use LCSLaravel\Database\Query\QueryResultFormatter;
@@ -13,7 +14,7 @@ class UpdateOperationHandler implements OperationHandlerInterface
 
     private QueryResultFormatter $formatter;
 
-    private ?string $lastQuery = null;
+    private ?Builder $lastQuery = null;
 
     public function __construct(
         WhereExpressionBuilder $whereBuilder,
@@ -52,7 +53,7 @@ class UpdateOperationHandler implements OperationHandlerInterface
         $numRowsAffected = $query->update($operation['data']);
 
         // Get the SQL query that would be executed
-        $this->lastQuery = $query->toRawSql();
+        $this->lastQuery = $query;
 
         // Format and return the results
         return $this->formatter->format(
@@ -62,7 +63,7 @@ class UpdateOperationHandler implements OperationHandlerInterface
         );
     }
 
-    public function getQuery(): ?string
+    public function getQuery(): ?Builder
     {
         return $this->lastQuery;
     }
