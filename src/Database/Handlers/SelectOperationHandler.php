@@ -43,9 +43,18 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Handle attributes (select columns)
         if (isset($operation['attributes'])) {
             $attributes = array_map(function ($attr) {
-                return str_contains($attr, '->')
-                    ? $this->jsonPathHandler->handle($attr)
-                    : $attr;
+                // Handle JSON paths
+                if (str_contains($attr, '->')) {
+                    return $this->jsonPathHandler->handle($attr);
+                }
+
+                // Check if this is an aggregate function (COUNT, SUM, AVG, MIN, MAX)
+                // Pattern matches: FUNCTION(...) AS alias or FUNCTION(*)
+                if (preg_match('/^(COUNT|SUM|AVG|MIN|MAX)\s*\(/i', $attr)) {
+                    return DB::raw($attr);
+                }
+
+                return $attr;
             }, $operation['attributes']);
             $query->select($attributes);
         }
@@ -83,6 +92,17 @@ class SelectOperationHandler implements OperationHandlerInterface
             // dd($query->toRawSql()); // For debugging purposes, remove in production
         }
 
+        // Handle groupBy
+        if (isset($operation['groupBy']) && is_array($operation['groupBy'])) {
+            // Laravel's groupBy can accept multiple columns as separate arguments or as an array
+            // Since we're getting an array, we can pass it directly
+            $query->groupBy(...$operation['groupBy']);
+        }
+
+        // if (isset($operation['groupBy'])) {
+        //     dd($query->toRawSql()); // For debugging purposes, remove in production
+        // }
+
         // Handle pagination
         if (isset($operation['pagination'])) {
             return $this->handlePagination($query, $operation['pagination']);
@@ -92,9 +112,6 @@ class SelectOperationHandler implements OperationHandlerInterface
         $startTime = microtime(true);
         $results = $query->get();
         $this->lastQuery = $query;
-        // if (isset($operation['joins'])) {
-        //     dd($results);
-        // }
 
         return $this->formatter->format($results, $this->lastQuery, $startTime);
     }
@@ -163,7 +180,7 @@ class SelectOperationHandler implements OperationHandlerInterface
         if ($pagination['type'] === 'cursor') {
             $results = $query->cursorPaginate(
                 $pagination['per_page'],
-                ['*'],
+                '*',
                 'cursor',
                 $pagination['cursor'] ?? null
             );
