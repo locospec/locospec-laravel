@@ -52,8 +52,17 @@ class WhereExpressionBuilder
         $operator = $this->normalizeOperator($condition['op']);
         $value = $condition['value'] ?? null;
 
-        if (str_contains($attribute, '->')) {
-            $attribute = $this->jsonPathHandler->handle($attribute);
+        // Check if it's already a Query Expression (from DB::raw)
+        if (! ($attribute instanceof \Illuminate\Database\Query\Expression)) {
+            // Check if this is a SQL expression FIRST (before JSON path check)
+            if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
+                $attribute = DB::raw($attribute);
+            }
+            // Only process JSON paths if it's not a SQL expression
+            elseif (str_contains($attribute, '->')) {
+                // $attribute = $this->jsonPathHandler->handle($attribute);
+                $attribute = DB::raw($attribute);
+            }
         }
 
         match ($operator) {
