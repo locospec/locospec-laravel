@@ -43,14 +43,31 @@ class SelectOperationHandler implements OperationHandlerInterface
         // Handle attributes (select columns)
         if (isset($operation['attributes'])) {
             $attributes = array_map(function ($attr) {
-                // Handle JSON paths
-                if (str_contains($attr, '->')) {
-                    return $this->jsonPathHandler->handle($attr);
+                // Check if this attribute already has an alias (contains " AS ")
+                if (str_contains($attr, ' AS ')) {
+                    // This is a complete SQL expression with alias, wrap it with DB::raw
+                    return DB::raw($attr);
+                }
+
+                // Check if this is a CASE expression FIRST (before JSON path check)
+                if (preg_match('/^CASE\s+/i', $attr)) {
+                    return DB::raw($attr);
                 }
 
                 // Check if this is an aggregate function (COUNT, SUM, AVG, MIN, MAX)
                 // Pattern matches: FUNCTION(...) AS alias or FUNCTION(*)
                 if (preg_match('/^(COUNT|SUM|AVG|MIN|MAX)\s*\(/i', $attr)) {
+                    return DB::raw($attr);
+                }
+
+                // Check for other SQL expressions (CAST, COALESCE, CONCAT, etc.)
+                if (preg_match('/^(CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s*\(/i', $attr)) {
+                    return DB::raw($attr);
+                }
+
+                // Handle JSON paths (only if not a SQL expression)
+                if (str_contains($attr, '->')) {
+                    // return $this->jsonPathHandler->handle($attr);
                     return DB::raw($attr);
                 }
 
