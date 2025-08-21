@@ -153,6 +153,11 @@ class QueryResultFormatter
             return $this->collectionDeepToArray(get_object_vars($data));
         }
 
+        // NEW: If it's a JSON string, decode it and process again --> remove this if memory usage increases
+        if (is_string($data) && $this->isLikelyJson($data)) {
+            return $this->collectionDeepToArray(json_decode($data, true));
+        }
+
         return $data;
     }
 
@@ -167,5 +172,14 @@ class QueryResultFormatter
         }
 
         return $data; // Return primitive values as-is
+    }
+
+    private function isLikelyJson($string)
+    {
+        // Quick cheap check before json_decode
+        $first = substr($string, 0, 1);
+        $last = substr($string, -1);
+
+        return ($first === '{' && $last === '}') || ($first === '[' && $last === ']');
     }
 }
