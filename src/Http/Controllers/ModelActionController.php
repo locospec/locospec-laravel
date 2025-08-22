@@ -29,13 +29,7 @@ class ModelActionController extends Controller
             ];
 
             // Execute the action via LLCS facade
-            $result = LLCS::executeModelAction(
-                LLCS::getDefaultValidator(),
-                LLCS::getDefaultGenerator(),
-                $specName,
-                $actionName,
-                $input
-            );
+            $result = LLCS::executeModelAction($specName, $actionName, $input);
 
             return response()->json([
                 'success' => true,

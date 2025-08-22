@@ -71,43 +71,76 @@ class LLCSServiceProvider extends PackageServiceProvider
 
         // Bind the validator. Users can override this via the config if desired.
         $this->app->singleton(ValidatorInterface::class, function () {
-            $validatorClass = config('locospec-laravel.validator', new DefaultValidator);
-
-            return $validatorClass;
+            return new DefaultValidator;
         });
 
         // Bind the generator. Users can override this via the config if desired.
         $this->app->singleton(GeneratorInterface::class, function () {
-            $validatorClass = config('locospec-laravel.generator', new DefaultGenerator);
-
-            return $validatorClass;
+            return new DefaultGenerator;
         });
 
         // Register LLCS
         $this->app->bind('llcs', function ($app) {
             $databaseConnections = config('locospec-laravel.drivers.database_connections', []);
+            $validators = config('locospec-laravel.validators', []);
+            $generators = config('locospec-laravel.generators', []);
 
             // Register database operator with LCS
             $lcs = $app->make(LCS::class);
             $registryManager = $lcs->getRegistryManager();
             $dbOperator = $app->make(DatabaseDriverInterface::class);
+            $validator = $app->make(ValidatorInterface::class);
+            $generator = $app->make(GeneratorInterface::class);
 
+            // Register default implementations
             $registryManager->register(
                 'database_driver',
                 ['name' => 'default', 'className' => $dbOperator]
             );
 
-            foreach ($databaseConnections as $key => $databaseConnection) {
+            $registryManager->register(
+                'generator',
+                ['name' => 'default', 'className' => $generator]
+            );
 
-                if ($databaseConnection === 'default') {
-                    throw new Exception(
-                        'Invalid connection name default'
-                    );
+            $registryManager->register(
+                'validator',
+                ['name' => 'default', 'className' => $validator]
+            );
+
+            // Register additional database connections
+            foreach ($databaseConnections as $connectionName) {
+                if ($connectionName === 'default') {
+                    throw new Exception('Invalid connection name: default');
                 }
 
                 $registryManager->register(
                     'database_driver',
-                    ['name' => $databaseConnection, 'className' => $dbOperator]
+                    ['name' => $connectionName, 'className' => $dbOperator]
+                );
+            }
+
+            // Register additional validators
+            foreach ($validators as $validatorName => $validatorClass) {
+                if ($validatorName === 'default') {
+                    throw new Exception('Invalid validator name: default');
+                }
+
+                $registryManager->register(
+                    'validator',
+                    ['name' => $validatorName, 'className' => $validatorClass]
+                );
+            }
+
+            // Register additional generators
+            foreach ($generators as $generatorName => $generatorClass) {
+                if ($generatorName === 'default') {
+                    throw new Exception('Invalid generator name: default');
+                }
+
+                $registryManager->register(
+                    'generator',
+                    ['name' => $generatorName, 'className' => $generatorClass]
                 );
             }
 

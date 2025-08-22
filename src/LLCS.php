@@ -51,10 +51,10 @@ class LLCS
     /**
      * Execute a model action
      */
-    public function executeModelAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, string $actionName, array $input = []): array
+    public function executeModelAction(string $specName, string $actionName, array $input = []): array
     {
         $data = $this->app->make('LCSEngine\Actions\ActionOrchestrator')
-            ->execute($curdValidator, $generator, $specName, $actionName, $input);
+            ->execute($specName, $actionName, $input);
 
         return $data->currentOutput;
     }
@@ -62,10 +62,10 @@ class LLCS
     /**
      * Execute a model action
      */
-    public function executeCustomAction(ValidatorInterface $curdValidator, GeneratorInterface $generator, string $specName, array $input = []): array
+    public function executeCustomAction(string $specName, array $input = []): array
     {
         $data = $this->app->make('LCSEngine\Actions\CustomActionOrchestrator')
-            ->execute($curdValidator, $generator, $specName, $input);
+            ->execute($specName, $input);
 
         return $data->currentOutput;
     }

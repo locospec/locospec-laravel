@@ -36,6 +36,7 @@ class DefaultGenerator implements GeneratorInterface
 
                     $options['dbOps']->add([
                         'type' => 'select',
+                        'purpose' => 'read',
                         'modelName' => $options['modelName'],
                         'filters' => [
                             'op' => 'and',
