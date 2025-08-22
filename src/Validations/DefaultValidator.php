@@ -133,6 +133,7 @@ class DefaultValidator implements ValidatorInterface
 
                 $options['dbOps']->add([
                     'type' => 'select',
+                    'purpose' => 'read',
                     'modelName' => $options['modelName'],
                     'filters' => $filters,
                 ]);
@@ -144,6 +145,7 @@ class DefaultValidator implements ValidatorInterface
             case 'exists':
                 $options['dbOps']->add([
                     'type' => 'select',
+                    'purpose' => 'read',
                     'modelName' => $options['modelName'],
                     'filters' => [
                         'op' => 'and',

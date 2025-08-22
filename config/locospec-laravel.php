@@ -43,4 +43,10 @@ return [
     ],
     'cache_path' => base_path('storage/app/private'),
     'enablePermissions' => false,
+    'validators' => [
+        // 'name'=> class,
+    ],
+    'generators' => [
+        // 'name'=> class,
+    ],
 ];
