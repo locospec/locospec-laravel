@@ -165,7 +165,7 @@ class DefaultValidator implements ValidatorInterface
 
                 // Add more cases for additional custom validations.
             default:
-                throw new RuntimeException("Custom rule '{$rule}' is not implemented.");
+                throw new \InvalidArgumentException("Custom rule '{$rule}' is not implemented.");
         }
     }
 }
