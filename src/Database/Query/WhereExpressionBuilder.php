@@ -52,29 +52,51 @@ class WhereExpressionBuilder
         $operator = $this->normalizeOperator($condition['op']);
         $value = $condition['value'] ?? null;
 
-        // Check if it's already a Query Expression (from DB::raw)
-        if (! ($attribute instanceof \Illuminate\Database\Query\Expression)) {
-            // Check if this is a SQL expression FIRST (before JSON path check)
-            if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
-                if ($operator === 'contains' || $operator === 'not_contains') {
-                    $attribute = DB::raw("LOWER({$attribute})");
-                } else {
-                    $attribute = DB::raw($attribute);
-                }
-            }
-            // Only process JSON paths if it's not a SQL expression
-            elseif (str_contains($attribute, '->')) {
-                // $attribute = $this->jsonPathHandler->handle($attribute);
+        // Handle range date presets specially
+        if (is_string($value) && $this->isRangeDatePreset($value)) {
+            $this->buildRangeDateCondition($query, $attribute, $value, $method);
 
-                if ($operator === 'contains' || $operator === 'not_contains') {
-                    $attribute = DB::raw("LOWER({$attribute})");
+            return;
+        }
+
+        // Resolve date presets to actual dates
+        $value = $this->resolveDatePresets($value);
+
+        // Process the attribute for SQL generation
+        $attribute = $this->processAttribute($attribute, $operator);
+
+        // Handle date comparisons specially for "is" and "is_not" operators
+        if ($this->isDateString($value) && in_array($operator, ['is', 'is_not'])) {
+            $dateAttribute = $this->wrapWithDateFunction($attribute);
+            match ($operator) {
+                'is' => $query->$method($dateAttribute, '=', $value),
+                'is_not' => $query->$method($dateAttribute, '!=', $value),
+            };
+
+            return;
+        }
+
+        // Handle date arrays with "is" operator (treat as range)
+        if (is_array($value) && count($value) === 2 && in_array($operator, ['is', 'is_not'])) {
+            [$startDate, $endDate] = $value;
+            if ($this->isDateString($startDate) && $this->isDateString($endDate)) {
+                $processedAttribute = $this->processAttribute($attribute);
+
+                if ($operator === 'is') {
+                    // "is" with date range means "between these dates"
+                    $query->$method(function ($q) use ($processedAttribute, $startDate, $endDate) {
+                        $q->where($processedAttribute, '>=', $startDate)
+                            ->where($processedAttribute, '<=', $endDate);
+                    });
                 } else {
-                    $attribute = DB::raw($attribute);
+                    // "is_not" with date range means "not between these dates"
+                    $query->$method(function ($q) use ($processedAttribute, $startDate, $endDate) {
+                        $q->where($processedAttribute, '<', $startDate)
+                            ->orWhere($processedAttribute, '>', $endDate);
+                    });
                 }
-            }
-        } else {
-            if ($operator === 'contains' || $operator === 'not_contains') {
-                $attribute = DB::raw("LOWER({$attribute})");
+
+                return;
             }
         }
 
@@ -95,6 +117,165 @@ class WhereExpressionBuilder
             'is_not_empty' => $query->{"{$method}NotNull"}($attribute),
             default => throw new \InvalidArgumentException("Unsupported operator: {$operator}")
         };
+    }
+
+    private function processAttribute($attribute, ?string $operator = null)
+    {
+        // Check if it's already a Query Expression (from DB::raw)
+        if ($attribute instanceof \Illuminate\Database\Query\Expression) {
+            if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
+                return DB::raw("LOWER({$attribute})");
+            }
+
+            return $attribute;
+        }
+
+        // Check if this is a SQL expression FIRST (before JSON path check)
+        if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
+            if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
+                return DB::raw("LOWER({$attribute})");
+            } else {
+                return DB::raw($attribute);
+            }
+        }
+        // Only process JSON paths if it's not a SQL expression
+        elseif (str_contains($attribute, '->')) {
+            // $attribute = $this->jsonPathHandler->handle($attribute);
+
+            if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
+                return DB::raw("LOWER({$attribute})");
+            } else {
+                return DB::raw($attribute);
+            }
+        }
+
+        // For regular column names, return as-is
+        return $attribute;
+    }
+
+    private function isRangeDatePreset(string $value): bool
+    {
+        $rangePresets = [
+            'next_7_days',
+            'last_7_days',
+            'this_week',
+            'next_week',
+            'last_week',
+            'last_month',
+            'this_month',
+            'next_month',
+            'today_and_earlier',
+            'last_quarter',
+            'this_quarter',
+            'next_quarter',
+            'overdue',
+            'later_than_today',
+        ];
+
+        return in_array($value, $rangePresets);
+    }
+
+    private function buildRangeDateCondition(Builder $query, $attribute, string $preset, string $method): void
+    {
+        $dateRange = $this->getRangeDatesForPreset($preset);
+
+        if (count($dateRange) === 2) {
+            [$startDate, $endDate] = $dateRange;
+
+            // Process the attribute the same way as in buildCondition for consistency
+            $processedAttribute = $this->processAttribute($attribute);
+
+            // Use a nested where group to ensure proper AND logic for the range
+            $query->$method(function ($q) use ($processedAttribute, $startDate, $endDate) {
+                $q->where($processedAttribute, '>=', $startDate)
+                    ->where($processedAttribute, '<=', $endDate);
+            });
+        }
+    }
+
+    private function getRangeDatesForPreset(string $preset): array
+    {
+        return match ($preset) {
+            'next_7_days' => [now()->format('Y-m-d'), now()->addDays(7)->format('Y-m-d')],
+            'last_7_days' => [now()->subDays(7)->format('Y-m-d'), now()->format('Y-m-d')],
+            'this_week' => [now()->startOfWeek()->format('Y-m-d'), now()->endOfWeek()->format('Y-m-d')],
+            'next_week' => [
+                now()->addWeek()->startOfWeek()->format('Y-m-d'),
+                now()->addWeek()->endOfWeek()->format('Y-m-d'),
+            ],
+            'last_week' => [
+                now()->subWeek()->startOfWeek()->format('Y-m-d'),
+                now()->subWeek()->endOfWeek()->format('Y-m-d'),
+            ],
+            'last_month' => [
+                now()->subMonth()->startOfMonth()->format('Y-m-d'),
+                now()->subMonth()->endOfMonth()->format('Y-m-d'),
+            ],
+            'this_month' => [now()->startOfMonth()->format('Y-m-d'), now()->endOfMonth()->format('Y-m-d')],
+            'next_month' => [
+                now()->addMonth()->startOfMonth()->format('Y-m-d'),
+                now()->addMonth()->endOfMonth()->format('Y-m-d'),
+            ],
+            'today_and_earlier' => ['1900-01-01', now()->format('Y-m-d')],
+            'last_quarter' => [
+                now()->subQuarter()->startOfQuarter()->format('Y-m-d'),
+                now()->subQuarter()->endOfQuarter()->format('Y-m-d'),
+            ],
+            'this_quarter' => [now()->startOfQuarter()->format('Y-m-d'), now()->endOfQuarter()->format('Y-m-d')],
+            'next_quarter' => [
+                now()->addQuarter()->startOfQuarter()->format('Y-m-d'),
+                now()->addQuarter()->endOfQuarter()->format('Y-m-d'),
+            ],
+            'overdue' => ['1900-01-01', now()->subDay()->format('Y-m-d')],
+            'later_than_today' => [now()->addDay()->format('Y-m-d'), '2100-12-31'],
+            default => []
+        };
+    }
+
+    private function resolveDatePresets($value)
+    {
+        // If value is not a string, return as-is
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        // Check if it's already a date string (YYYY-MM-DD format)
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+            return $value;
+        }
+
+        // Resolve single date presets only (range presets handled separately)
+        return match ($value) {
+            'today' => now()->format('Y-m-d'),
+            'yesterday' => now()->subDay()->format('Y-m-d'),
+            'tomorrow' => now()->addDay()->format('Y-m-d'),
+            default => $value // Return original value if not a recognized preset
+        };
+    }
+
+    private function isDateString($value): bool
+    {
+        return is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $value);
+    }
+
+    private function wrapWithDateFunction($attribute)
+    {
+        // Check if it's already a Query Expression (from DB::raw)
+        if ($attribute instanceof \Illuminate\Database\Query\Expression) {
+            return DB::raw("DATE({$attribute})");
+        }
+
+        // Check if this is a SQL expression FIRST (before JSON path check)
+        if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
+            return DB::raw("DATE({$attribute})");
+        }
+        // Handle JSON paths
+        elseif (str_contains($attribute, '->')) {
+            return DB::raw("DATE({$attribute})");
+        }
+
+        // For regular column names
+        return DB::raw("DATE({$attribute})");
     }
 
     private function normalizeOperator(string $operator): string
