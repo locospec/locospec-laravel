@@ -83,12 +83,7 @@ class DefaultGenerator implements GeneratorInterface
                         ? $options['values'][0]
                         : null;
                 case 'state_machine':
-                    $result = LLCS::executeCustomAction(
-                        LLCS::getDefaultValidator(),
-                        LLCS::getDefaultGenerator(),
-                        $options['modelName'],
-                        $options
-                    );
+                    $result = LLCS::executeCustomAction($options['modelName'], $options);
 
                     return $result['result'][$options['source']];
                 default:

@@ -25,45 +25,45 @@ class DefaultValidator implements ValidatorInterface
         try {
             foreach ($attributes as $field => $definition) {
                 $fieldRules = [];
-                $validations = $definition->getValidators()->map(fn ($validator) => $validator->toArray())->all();
+                $validations = $definition->getValidators()->all();
                 if (isset($validations) && is_array($validations)) {
                     foreach ($validations as $validation) {
+                        $operations = $validation->getOperations();
                         // If the validation has an 'operations' key, only apply if the current operation is allowed.
-                        if (isset($validation->operations) && is_array($validation->operations)) {
-                            if (! in_array($options['action'], $validation->operations)) {
+                        if ($operations->isNotEmpty()) {
+                            if (! in_array($options['action'], $operations->map(fn ($operation) => $operation->value)->all())) {
                                 continue;
                             }
                         }
-
                         // Allow users to directly specify a Laravel validation rule
-                        if (isset($validation->type)) {
-                            switch ($validation->type) {
-                                case 'unique':
-                                case 'exists':
-                                    $customRules[$field][] = [
-                                        'rule' => $validation->type,
-                                        'message' => $validation->message ?? "Validation failed for custom rule: {$validation->type}",
-                                    ];
-                                    if (isset($validation->model)) {
-                                        $options['modelName'] = $validation->model;
-                                    }
+                        switch ($validation->getType()->value) {
+                            case 'unique':
+                            case 'exists':
+                                $customRules[$field][] = [
+                                    'rule' => $validation->getType()->value,
+                                    'message' => $validation->getMessage() ?? "Validation failed for custom rule: {$validation->getType()->value}",
+                                ];
 
-                                    if (isset($validation->with)) {
-                                        $options['with'] = $validation->with;
-                                    }
-                                    break;
+                                // TODO-Rajesh: add these to the validator
+                                if (isset($validation->model)) {
+                                    $options['modelName'] = $validation->model;
+                                }
 
-                                default:
-                                    // code...
-                                    $fieldRules[] = $validation->type;
-                                    // Determine the rule name (e.g., "min" from "min:3") for message assignment.
-                                    $ruleName = explode(':', $validation->type)[0];
-                                    if (isset($validation->message)) {
-                                        $messages["{$field}.{$ruleName}"] = $validation->message;
-                                    }
-                                    break;
-                            }
+                                if (isset($validation->with)) {
+                                    $options['with'] = $validation->with;
+                                }
+                                break;
+
+                            default:
+                                $fieldRules[] = $validation->getType()->value;
+                                // Determine the rule name (e.g., "min" from "min:3") for message assignment.
+                                $ruleName = explode(':', $validation->getType()->value)[0];
+                                if ($validation->hasMessage()) {
+                                    $messages["{$field}.{$ruleName}"] = $validation->getMessage();
+                                }
+                                break;
                         }
+
                     }
                 }
                 if (! empty($fieldRules)) {
@@ -75,7 +75,6 @@ class DefaultValidator implements ValidatorInterface
             // Create the Laravel validator instance.
             $validator = Validator::make($input, $rules, $messages);
             $errors = $validator->errors();
-
             // Now process each custom rule.
             foreach ($customRules as $field => $rulesData) {
                 $value = $input[$field] ?? null;
