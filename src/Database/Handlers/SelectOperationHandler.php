@@ -168,12 +168,22 @@ class SelectOperationHandler implements OperationHandlerInterface
 
                 [$leftColumn, $operator, $rightColumn] = $onCondition;
 
+                // Apply type casting if column types are available and different
+                if (isset($join['left_col_type']) && isset($join['right_col_type'])) {
+                    [$leftColumn, $rightColumn] = $this->applyTypeCasting(
+                        $leftColumn,
+                        $rightColumn,
+                        $join['left_col_type'],
+                        $join['right_col_type']
+                    );
+                }
+
                 if ($join['type'] === 'inner') {
-                    $query->join($table, $leftColumn, $operator, $rightColumn);
+                    $query->join($table, DB::raw($leftColumn), $operator, DB::raw($rightColumn));
                 } elseif ($join['type'] === 'left') {
-                    $query->leftJoin($table, $leftColumn, $operator, $rightColumn);
+                    $query->leftJoin($table, DB::raw($leftColumn), $operator, DB::raw($rightColumn));
                 } elseif ($join['type'] === 'right') {
-                    $query->rightJoin($table, $leftColumn, $operator, $rightColumn);
+                    $query->rightJoin($table, DB::raw($leftColumn), $operator, DB::raw($rightColumn));
                 }
                 break;
 
@@ -218,5 +228,32 @@ class SelectOperationHandler implements OperationHandlerInterface
     public function getQuery(): ?Builder
     {
         return $this->lastQuery;
+    }
+
+    /**
+     * Apply type casting to join columns when types don't match
+     */
+    private function applyTypeCasting(string $leftColumn, string $rightColumn, string $leftColType, string $rightColType): array
+    {
+        // If types match, no casting needed
+        if ($leftColType === $rightColType) {
+            return [$leftColumn, $rightColumn];
+        }
+
+        // Apply PostgreSQL type casting for common mismatches
+        // Most common case: string to uuid
+        if ($leftColType === 'string' && $rightColType === 'uuid') {
+            $leftColumn = $leftColumn.'::uuid';
+        } elseif ($leftColType === 'uuid' && $rightColType === 'string') {
+            $rightColumn = $rightColumn.'::uuid';
+        }
+        // Handle other potential type mismatches
+        elseif ($leftColType === 'string' && in_array($rightColType, ['integer', 'id'])) {
+            $leftColumn = $leftColumn.'::integer';
+        } elseif (in_array($leftColType, ['integer', 'id']) && $rightColType === 'string') {
+            $rightColumn = $rightColumn.'::integer';
+        }
+
+        return [$leftColumn, $rightColumn];
     }
 }

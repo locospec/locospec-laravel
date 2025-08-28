@@ -56,12 +56,25 @@ class WhereExpressionBuilder
         if (! ($attribute instanceof \Illuminate\Database\Query\Expression)) {
             // Check if this is a SQL expression FIRST (before JSON path check)
             if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
-                $attribute = DB::raw($attribute);
+                if ($operator === 'contains' || $operator === 'not_contains') {
+                    $attribute = DB::raw("LOWER({$attribute})");
+                } else {
+                    $attribute = DB::raw($attribute);
+                }
             }
             // Only process JSON paths if it's not a SQL expression
             elseif (str_contains($attribute, '->')) {
                 // $attribute = $this->jsonPathHandler->handle($attribute);
-                $attribute = DB::raw($attribute);
+
+                if ($operator === 'contains' || $operator === 'not_contains') {
+                    $attribute = DB::raw("LOWER({$attribute})");
+                } else {
+                    $attribute = DB::raw($attribute);
+                }
+            }
+        } else {
+            if ($operator === 'contains' || $operator === 'not_contains') {
+                $attribute = DB::raw("LOWER({$attribute})");
             }
         }
 
@@ -74,8 +87,8 @@ class WhereExpressionBuilder
             'less_than_or_equal' => $query->$method($attribute, '<=', $value),
             // 'contains' => $query->$method($attribute, 'ILIKE', "%$value%"),
             // 'not_contains' => $query->$method($attribute, 'NOT ILIKE', "%$value%"),
-            'contains' => $query->{$method}(DB::raw("LOWER({$attribute})"), 'LIKE', '%'.strtolower($value).'%'),
-            'not_contains' => $query->{$method}(DB::raw("LOWER({$attribute})"), 'NOT LIKE', '%'.strtolower($value).'%'),
+            'contains' => $query->{$method}($attribute, 'LIKE', '%'.strtolower($value).'%'),
+            'not_contains' => $query->{$method}($attribute, 'NOT LIKE', '%'.strtolower($value).'%'),
             'is_any_of' => $query->{"{$method}In"}($attribute, (array) $value),
             'is_none_of' => $query->{"{$method}NotIn"}($attribute, (array) $value),
             'is_empty' => $query->{"{$method}Null"}($attribute),
