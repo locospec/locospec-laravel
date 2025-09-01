@@ -109,8 +109,8 @@ class WhereExpressionBuilder
             'less_than_or_equal' => $query->$method($attribute, '<=', $value),
             // 'contains' => $query->$method($attribute, 'ILIKE', "%$value%"),
             // 'not_contains' => $query->$method($attribute, 'NOT ILIKE', "%$value%"),
-            'contains' => $query->{$method}($attribute, 'LIKE', '%'.strtolower($value).'%'),
-            'not_contains' => $query->{$method}($attribute, 'NOT LIKE', '%'.strtolower($value).'%'),
+            'contains' => $query->{$method}($attribute, 'LIKE', '%' . strtolower($value) . '%'),
+            'not_contains' => $query->{$method}($attribute, 'NOT LIKE', '%' . strtolower($value) . '%'),
             'is_any_of' => $query->{"{$method}In"}($attribute, (array) $value),
             'is_none_of' => $query->{"{$method}NotIn"}($attribute, (array) $value),
             'is_empty' => $query->{"{$method}Null"}($attribute),
@@ -121,8 +121,12 @@ class WhereExpressionBuilder
 
     private function processAttribute($attribute, ?string $operator = null)
     {
-        // Check if it's already a Query Expression (from DB::raw)
         if ($attribute instanceof \Illuminate\Database\Query\Expression) {
+            return $attribute;
+        }
+
+        // Check if it's already a Query Expression (from DB::raw)
+        if (!($attribute instanceof \Illuminate\Database\Query\Expression)) {
             if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
                 return DB::raw("LOWER({$attribute})");
             }
