@@ -121,8 +121,12 @@ class WhereExpressionBuilder
 
     private function processAttribute($attribute, ?string $operator = null)
     {
-        // Check if it's already a Query Expression (from DB::raw)
         if ($attribute instanceof \Illuminate\Database\Query\Expression) {
+            return $attribute;
+        }
+
+        // Check if it's already a Query Expression (from DB::raw)
+        if (! ($attribute instanceof \Illuminate\Database\Query\Expression)) {
             if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
                 return DB::raw("LOWER({$attribute})");
             }
