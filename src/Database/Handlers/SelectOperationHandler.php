@@ -88,7 +88,7 @@ class SelectOperationHandler implements OperationHandlerInterface
                     continue;
                 }
                 $attribute = str_contains($sort['attribute'], '->')
-                    ? $this->jsonPathHandler->handle($sort['attribute'])
+                    ? DB::raw($sort['attribute'])
                     : $sort['attribute'];
                 $direction = $sort['direction'] ?? 'ASC';
                 $query->orderBy($attribute, $direction);
