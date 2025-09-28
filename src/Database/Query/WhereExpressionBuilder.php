@@ -121,12 +121,31 @@ class WhereExpressionBuilder
 
     private function processAttribute($attribute, ?string $operator = null)
     {
-        // Already wrapped in DB:raw
-        if ($attribute instanceof \Illuminate\Contracts\Database\Query\Expression) {
+        if ($attribute instanceof \Illuminate\Database\Query\Expression) {
             return $attribute;
         }
 
-        if ($this->isSqlExpression($attribute) || str_contains($attribute, '->')) {
+        // Check if it's already a Query Expression (from DB::raw)
+        if (! ($attribute instanceof \Illuminate\Database\Query\Expression)) {
+            if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
+                return DB::raw("LOWER({$attribute})");
+            }
+
+            return $attribute;
+        }
+
+        // Check if this is a SQL expression FIRST (before JSON path check)
+        if (is_string($attribute) && preg_match('/^(CASE|CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF)\s+/i', $attribute)) {
+            if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
+                return DB::raw("LOWER({$attribute})");
+            } else {
+                return DB::raw($attribute);
+            }
+        }
+        // Only process JSON paths if it's not a SQL expression
+        elseif (str_contains($attribute, '->')) {
+            // $attribute = $this->jsonPathHandler->handle($attribute);
+
             if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
                 return DB::raw("LOWER({$attribute})");
             } else {
@@ -134,10 +153,7 @@ class WhereExpressionBuilder
             }
         }
 
-        if ($operator && ($operator === 'contains' || $operator === 'not_contains')) {
-            return DB::raw("LOWER({$attribute})");
-        }
-
+        // For regular column names, return as-is
         return $attribute;
     }
 
@@ -269,31 +285,5 @@ class WhereExpressionBuilder
     private function normalizeOperator(string $operator): string
     {
         return strtolower($operator);
-    }
-
-    private function isSqlExpression(string $source): bool
-    {
-        // Check if this is a CASE expression
-        if (preg_match('/^CASE\s+/i', $source)) {
-            return true;
-        }
-
-        // Check if this is an aggregate function (COUNT, SUM, AVG, MIN, MAX)
-        if (preg_match('/^(COUNT|SUM|AVG|MIN|MAX)\s*\(/i', $source)) {
-            return true;
-        }
-
-        // Check for common SQL functions (including nested ones)
-        if (preg_match('/^(CAST|COALESCE|CONCAT|NULLIF|IFNULL|IF|TRIM|UPPER|LOWER|SUBSTRING|LEFT|RIGHT|REPLACE)\s*\(/i', $source)) {
-            return true;
-        }
-
-        // Check for any function pattern (letters/underscores followed by opening parenthesis)
-        if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*\s*\(/i', $source)) {
-            return true;
-        }
-
-        // If none of the above patterns match, it's likely a simple column name
-        return false;
     }
 }

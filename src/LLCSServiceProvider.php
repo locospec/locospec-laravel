@@ -174,7 +174,7 @@ class LLCSServiceProvider extends PackageServiceProvider
         parent::boot();
 
         if ($showLog) {
-            // Log::info('Booting LLCS');
+            Log::info('Booting LLCS');
         }
 
         try {
@@ -185,7 +185,7 @@ class LLCSServiceProvider extends PackageServiceProvider
                     'cache_path' => config('locospec-laravel.cache_path', ''),
                 ]);
                 if ($showLog) {
-                    // Log::info('LCS bootstrapped successfully');
+                    Log::info('LCS bootstrapped successfully');
                 }
             }
         } catch (\Exception $e) {
