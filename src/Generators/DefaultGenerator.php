@@ -26,6 +26,20 @@ class DefaultGenerator implements GeneratorInterface
                 case 'ulid':
                     return Str::ulid()->toString();
 
+                case 'lowercase':
+                    if (! isset($options['sourceValue'])) {
+                        return null;
+                    }
+
+                    return Str::lower($options['sourceValue']);
+
+                case 'uppercase':
+                    if (! isset($options['sourceValue'])) {
+                        return null;
+                    }
+
+                    return Str::upper($options['sourceValue']);
+
                 case 'unique_slug':
                     if (! isset($options['sourceValue'])) {
                         return null;
