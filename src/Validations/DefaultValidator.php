@@ -53,6 +53,15 @@ class DefaultValidator implements ValidatorInterface
                                     $options['with'] = $validation->with;
                                 }
                                 break;
+                            case 'regex':
+                                // Laravel's regex rule requires delimiters (passes directly to preg_match)
+                                // Pattern should include delimiters like /^pattern$/
+                                $fieldRules[] = 'regex:'.$validation->getPattern();
+
+                                if ($validation->hasMessage()) {
+                                    $messages["{$field}.{$validation->getType()->value}"] = $validation->getMessage();
+                                }
+                                break;
 
                             default:
                                 $fieldRules[] = $validation->getType()->value;
@@ -67,8 +76,9 @@ class DefaultValidator implements ValidatorInterface
                     }
                 }
                 if (! empty($fieldRules)) {
-                    // Join multiple rules with a pipe (e.g., "required|min:3|regex:pattern").
-                    $rules[$field] = implode('|', $fieldRules);
+                    // Use array format to avoid conflicts with pipe characters in regex patterns
+                    // Laravel supports both string (pipe-separated) and array formats
+                    $rules[$field] = $fieldRules;
                 }
             }
 
